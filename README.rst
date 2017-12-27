@@ -10,7 +10,7 @@ Install
 
 .. code:: bash
 
-  $ pip install djangomodel2alchemymap
+  $ pip install d2a
 
 Usage
 =====
@@ -38,3 +38,7 @@ Usage
     <class 'd2a.alchemy.test_table'>
     >>> models_sqla.Test.__table__  # and got Table ! yatta!
     Table('test_table', MetaData(bind=None), Column('id', CHAR(length=32), table=<test_table>, primary_key=True, nullable=False), Column('no', INTEGER(), table=<test_table>, nullable=False), Column('created', DateTime(), table=<test_table>, nullable=False), Column('updated', DateTime(), table=<test_table>, nullable=False), Column('type', VARCHAR(length=20), table=<test_table>, nullable=False), Column('description', Text(), table=<test_table>), Column('status', VARCHAR(length=10), table=<test_table>), Column('category', VARCHAR(length=255), table=<test_table>), schema=None)
+
+Links
+=====
+- https://github.com/righ/d2a
