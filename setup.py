@@ -18,7 +18,7 @@ keywords = [
 ]
 
 setup(
-    name='django2alchemy',
+    name='d2a',
     version='0.0.1',
     install_requires=['Django', 'SQLAlchemy'],
     description='it converts a django model to a sqlalchemy declaration',
