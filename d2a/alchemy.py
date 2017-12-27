@@ -33,18 +33,19 @@ types = {
 
 def declare(model_info, db=None):
     cls_kwargs = OrderedDict({'__tablename__': model_info['name']})
-    for name, field in model_info['fields']:
+    for name, field in model_info['fields'].items():
         args = [name]
-        ftype = field['type']
-        if isinstance(ftype, dict):
-            ftype = ftype.get(db, ftype['default'])
-        if ftype in {'char', 'varchar'}:
-            ftype = ftype(field['length'])
-        args += [ftype]
+        key = field['type']
+        if isinstance(key, dict):
+            key = key.get(db, key['default'])
+        atype = types[key]
+        if key in {'char', 'varchar'}:
+            atype = atype(field['length'])
+        args += [atype]
         if 'related_to' in field:
             args += [ForeignKey(field['related_to'])]
         kwargs = {k: field[k] for k in ['primary_key', 'unique', 'nullable']}
-        cls_kwargs[name] = Column(name, *kwargs)
+        cls_kwargs[name] = Column(*args, **kwargs)
 
     cls = type(model_info['name'], (Base,), cls_kwargs)
     return cls

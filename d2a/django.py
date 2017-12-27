@@ -101,7 +101,7 @@ def analyze_field(field):
     info['nullable'] = field.null
 
     info.update(types[field_type])
-    info.update(types.pop('callback', lambda x: {})(field))
+    info.update(info.pop('callback', lambda x: {})(field))
 
     return info
 
