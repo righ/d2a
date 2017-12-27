@@ -106,17 +106,17 @@ def analyze_field(field):
     return info
 
 
-def analyze_model(model):
+def analyze_model(model, callback=analyze_field):
     info = {'name': model._meta.db_table, 'fields': OrderedDict()}
     for field in model._meta.fields:
-        info['fields'][field.attname] = analyze_field(field)
+        info['fields'][field.attname] = callback(field)
 
     return info
 
 
-def analyze_models(module, condition=lambda model: True):
-    models = []
-    for model in [getattr(module, a) for a in dir(module)]:
+def analyze_models(module, condition=lambda model: True, callback=analyze_model):
+    models = {}
+    for name, model in [(name, getattr(module, name)) for name in dir(module)]:
         if isinstance(model, ModelBase) and condition(model):
-            models.append(model)
+            models[name] = callback(model)
     return models
