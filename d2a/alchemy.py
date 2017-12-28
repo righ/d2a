@@ -31,25 +31,25 @@ types = {
     'bytea': postgresql_types.BYTEA,
 }
 
+existing_tables = {}
 
-def declare(model_info, db=None):
-    cls_kwargs = OrderedDict({'__tablename__': model_info['name']})
+
+def declare(model_info, db=None, back_type=None):
+    table_name = model_info['name']
+    if table_name in existing_tables:
+        return existing_tables[table_name]
 
     secondaries = {}
+    cls_kwargs = OrderedDict({'__tablename__': table_name})
     for name, field in model_info['fields'].items():
-        args = [name]
         if 'secondary' in field:
-            model_name = field['secondary']['name']
-            print('model_name:', model_name)
-
-            if model_name in secondaries:
-                table = secondaries[model_name]
-                cls_kwargs[name] = relationship(model_name, secondary=table.name)
-            else:
-                table = secondaries[model_name] = declare(field['secondary']).__table__
-                cls_kwargs[name] = relationship(model_name, secondary=table)
-
+            field_name = field['secondary']['name']
+            table = secondaries.get(field_name, declare(field['secondary']))
+            kwargs = {back_type: field['related_name']} if back_type else {}
+            cls_kwargs[name] = relationship(field_name, secondary=table, **kwargs)
             continue
+
+        args = [name]
         key = field['type']
         if isinstance(key, dict):
             key = key.get(db, key['default'])
@@ -58,10 +58,10 @@ def declare(model_info, db=None):
             atype = atype(field['length'])
         args += [atype]
         if 'related_to' in field:
-            args += [ForeignKey(field['related_to'])]
-        kwargs = {k: field[k] for k in ['primary_key', 'unique', 'nullable']}
+            args += [ForeignKey(field['related_to'], ondelete=field.get('on_delete'))]
+        kwargs = {k: field[k] for k in ['primary_key', 'unique', 'nullable', 'default']}
         cls_kwargs[name] = Column(*args, **kwargs)
 
-    cls = type(model_info['name'], (Base,), cls_kwargs)
+    cls = existing_tables[table_name] = type(table_name, (Base,), cls_kwargs)
     return cls
 

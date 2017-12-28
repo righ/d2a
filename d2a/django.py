@@ -37,8 +37,8 @@ types = {
     models.TimeField: {'type': 'time'},
     models.BooleanField: {'type': 'boolean'},
     models.NullBooleanField: {'type': 'boolean'},
-    models.ForeignKey: {},
-    models.OneToOneField: {},
+    models.ForeignKey: {'callback': lambda f: {'on_delete': f.on_delete.__name__}},
+    models.OneToOneField: {'callback': lambda f: {'on_delete': f.on_delete.__name__}},
 }
 
 
@@ -69,6 +69,7 @@ def analyze_field(field):
 
     if field_type is M2MField:
         info['secondary'] = analyze_model(field.rel.through)
+        info['related_name'] = field.rel.related_name
         return info
 
     if field_type is models.ForeignKey or field_type is models.OneToOneField:
