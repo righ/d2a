@@ -5,8 +5,8 @@ from django.db import models
 
 
 class CategoryRelation(models.Model):
-    category1 = models.ForeignKey('demo.BookCategory', related_name='parents', on_delete=models.CASCADE)
-    category2 = models.ForeignKey('demo.BookCategory', related_name='children', on_delete=models.CASCADE)
+    category1 = models.ForeignKey('demo.Category', related_name='parents', on_delete=models.CASCADE)
+    category2 = models.ForeignKey('demo.Category', related_name='children', on_delete=models.CASCADE)
     type = models.CharField(max_length=30, null=True)
 
     class Meta:
@@ -21,7 +21,7 @@ class Author(models.Model):
         db_table = 'author'
 
 
-class BookCategory(models.Model):
+class Category(models.Model):
     name = models.CharField(max_length=30)
     created = models.DateTimeField(auto_now=True)
     related_coming = models.ManyToManyField('self', symmetrical=False,
@@ -37,7 +37,7 @@ class Book(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     author = models.ForeignKey(Author, null=True, on_delete=models.SET_NULL, related_name='books')
-    category = models.ManyToManyField(BookCategory, related_name='books')
+    category = models.ManyToManyField(Category, related_name='books')
 
     class Meta:
         db_table = 'book'
@@ -50,3 +50,4 @@ class Sales(models.Model):
 
     class Meta:
         db_table = 'sales'
+

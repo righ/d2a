@@ -8,6 +8,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects import postgresql as postgresql_types
+from sqlalchemy.orm import relationship
 
 
 Base = declarative_base()
@@ -33,8 +34,22 @@ types = {
 
 def declare(model_info, db=None):
     cls_kwargs = OrderedDict({'__tablename__': model_info['name']})
+
+    secondaries = {}
     for name, field in model_info['fields'].items():
         args = [name]
+        if 'secondary' in field:
+            model_name = field['secondary']['name']
+            print('model_name:', model_name)
+
+            if model_name in secondaries:
+                table = secondaries[model_name]
+                cls_kwargs[name] = relationship(model_name, secondary=table.name)
+            else:
+                table = secondaries[model_name] = declare(field['secondary']).__table__
+                cls_kwargs[name] = relationship(model_name, secondary=table)
+
+            continue
         key = field['type']
         if isinstance(key, dict):
             key = key.get(db, key['default'])
@@ -49,3 +64,4 @@ def declare(model_info, db=None):
 
     cls = type(model_info['name'], (Base,), cls_kwargs)
     return cls
+

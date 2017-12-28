@@ -3,85 +3,63 @@ from collections import OrderedDict
 
 from django.db.models.base import ModelBase
 # The following fields are supported django 1.4 or later.
-from django.db.models import (
-    AutoField,
-    IntegerField, PositiveIntegerField,
-    SmallIntegerField, PositiveSmallIntegerField, BigIntegerField,
-    DecimalField, FloatField,
-    CharField, TextField,
-    DateTimeField, DateField, TimeField,
-    BooleanField, NullBooleanField,
-    ForeignKey, OneToOneField,
-
-    SlugField, URLField, EmailField,
-    FileField, FilePathField, ImageField,
-    GenericIPAddressField,
-)
+from django.db import models
+# django >= 1.9
+from django.db.models.fields.related_descriptors import ManyToManyDescriptor as M2MField
 
 types = {
-    AutoField: {'type': 'int'},
-    IntegerField: {'type': 'int'},
-    PositiveIntegerField: {'type': 'int'},
-    SmallIntegerField: {'type': 'int'},
-    PositiveSmallIntegerField: {'type': 'int', 'unsigned': True},
-    BigIntegerField: {'type': 'bigint'},
-    DecimalField: {'type': 'decimal',
-                   'callback': lambda f: {'precision': f.max_digits, 'scale': f.decimal_places}},
-    FloatField: {'type': 'float'},
-    CharField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
-    SlugField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
-    URLField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
-    EmailField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
-    FileField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
-    FilePathField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
-    ImageField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
-    GenericIPAddressField: {'type': {'postgres': 'inet', 'default': 'char'},
+    models.AutoField: {'type': 'int'},
+    models.IntegerField: {'type': 'int'},
+    models.PositiveIntegerField: {'type': 'int'},
+    models.SmallIntegerField: {'type': 'int'},
+    models.PositiveSmallIntegerField: {'type': 'int', 'unsigned': True},
+    models.BigIntegerField: {'type': 'bigint'},
+    models.DecimalField: {'type': 'decimal',
+                          'callback': lambda f: {'precision': f.max_digits, 'scale': f.decimal_places}},
+    models.FloatField: {'type': 'float'},
+    models.CharField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
+    models.SlugField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
+    models.URLField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
+    models.EmailField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
+    models.FileField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
+    models.FilePathField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
+    models.ImageField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
+    models.GenericIPAddressField: {'type': {'postgres': 'inet', 'default': 'char'},
                             'length': 39},
 
-    TextField: {'type': 'text'},
-    DateTimeField: {'type': 'datetime'},
-    DateField: {'type': 'date'},
-    TimeField: {'type': 'time'},
-    BooleanField: {'type': 'boolean'},
-    NullBooleanField: {'type': 'boolean'},
-    ForeignKey: {},
-    OneToOneField: {},
+    models.BinaryField: {'postgres': 'bytea', 'default': 'binary'},
+    models.DurationField: {'type': {'postgres': 'interval', 'default': 'bigint'}},
+    models.UUIDField: {'type': {'postgres': 'uuid', 'default': 'char'}, 'length': 32},
+
+    models.TextField: {'type': 'text'},
+    models.DateTimeField: {'type': 'datetime'},
+    models.DateField: {'type': 'date'},
+    models.TimeField: {'type': 'time'},
+    models.BooleanField: {'type': 'boolean'},
+    models.NullBooleanField: {'type': 'boolean'},
+    models.ForeignKey: {},
+    models.OneToOneField: {},
 }
+
+
+def get_m2m_fields(model):
+    return {
+        k: v for k, v in vars(model).items()
+        if isinstance(v, M2MField)
+    }
+
 
 try:
     # deprecated
-    from django.db.models import CommaSeparatedIntegerField
-    types[CommaSeparatedIntegerField] = {'type': 'varchar',
+    types[models.CommaSeparatedIntegerField] = {'type': 'varchar',
                                          'callback': lambda f: {'length': f.max_length}}
-except ImportError:
-    pass
-
-try:
-    # 1.6 or later supports
-    from django.db.models import BinaryField
-    types[BinaryField] = {'postgres': 'bytea', 'default': 'binary'}
-except ImportError:
-    pass
-
-try:
-    # 1.8 or later supports
-    from django.db.models import DurationField
-    types[DurationField] = {'type': {'postgres': 'interval', 'default': 'bigint'}}
-except ImportError:
-    pass
-
-try:
-    # 1.8 or later supports
-    from django.db.models import UUIDField
-    types[UUIDField] = {'type': {'postgres': 'uuid', 'default': 'char'}, 'length': 32}
-except ImportError:
+except AttributeError:
     pass
 
 try:
     # 1.10 or later supports
-    from django.db.models import BigAutoField
-    types[BigAutoField] = {'type': 'bigint'}
-except ImportError:
+    types[models.BigAutoField] = {'type': 'bigint'}
+except AttributeError:
     pass
 
 
@@ -89,7 +67,11 @@ def analyze_field(field):
     info = {}
     field_type = type(field)
 
-    if field_type is ForeignKey or field_type is OneToOneField:
+    if field_type is M2MField:
+        info['secondary'] = analyze_model(field.rel.through)
+        return info
+
+    if field_type is models.ForeignKey or field_type is models.OneToOneField:
         field_type = type(field.target_field)
         info['related_to'] = '{table}.{field}'.format(
             table=field.related_model._meta.db_table,
@@ -112,6 +94,9 @@ def analyze_model(model, callback=analyze_field):
     for field in model._meta.fields:
         info['fields'][field.attname] = callback(field)
 
+    for name, field in get_m2m_fields(model).items():
+        info['fields'][name] = callback(field)
+
     return info
 
 
@@ -121,3 +106,4 @@ def analyze_models(module, condition=lambda model: True, callback=analyze_model)
         if isinstance(model, ModelBase) and condition(model):
             models[name] = callback(model)
     return models
+
