@@ -99,6 +99,7 @@ def analyze_field(field):
     info['primary_key'] = field.primary_key
     info['unique'] = field.unique
     info['nullable'] = field.null
+    info['default'] = field.default
 
     info.update(types[field_type])
     info.update(info.pop('callback', lambda x: {})(field))

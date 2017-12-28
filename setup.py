@@ -19,7 +19,7 @@ keywords = [
 
 setup(
     name='d2a',
-    version='0.0.1',
+    version='0.0.2',
     install_requires=['Django', 'SQLAlchemy'],
     description='it converts a django model to a sqlalchemy declaration',
     long_description=open('./README.rst', 'r').read(),

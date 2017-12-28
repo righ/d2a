@@ -1,4 +1,4 @@
-from d2a import copy
+from d2a import transfer
 from . import models
 
-copy(models, globals())
+transfer(models, globals())

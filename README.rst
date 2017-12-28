@@ -5,8 +5,8 @@ Requirements
 - Python 3.6 (not tested)
 - Django 1.4 ~ 1.11 (not tested)
 
-Install
-=======
+Installation
+============
 
 .. code:: bash
 
@@ -14,14 +14,18 @@ Install
 
 Usage
 =====
-- For example you make `models_sqla.py` at a directory which `models.py` has been placed on.
+
+altogether
+----------
+Example: you make `models_sqla.py` at a directory which `models.py` has been placed on.
+
 - And write like the following to the `models_sqla.py`:
 
   .. code:: python
 
-     from d2a import copy
+     from d2a import transfer
      from . import models
-     copy(models, globals())
+     transfer(models, globals())
 
 - That's all, you can import sqlalchemy declaration made from django model.
 
@@ -30,7 +34,7 @@ Usage
   .. code:: python
 
     >>> from demo import models
-    <module 'demo.models' from 'djangomodel2alchemymap/sample/demo/models.py'>
+    <module 'demo.models' from 'd2a/sample/demo/models.py'>
     >>> models.  # tab tab tab -> Test is declared.
     models.Test(   models.models  models.uuid
     >>> from demo import models_sqla
@@ -39,6 +43,22 @@ Usage
     >>> models_sqla.Test.__table__  # and got Table ! yatta!
     Table('test_table', MetaData(bind=None), Column('id', CHAR(length=32), table=<test_table>, primary_key=True, nullable=False), Column('no', INTEGER(), table=<test_table>, nullable=False), Column('created', DateTime(), table=<test_table>, nullable=False), Column('updated', DateTime(), table=<test_table>, nullable=False), Column('type', VARCHAR(length=20), table=<test_table>, nullable=False), Column('description', Text(), table=<test_table>), Column('status', VARCHAR(length=10), table=<test_table>), Column('category', VARCHAR(length=255), table=<test_table>), schema=None)
 
+single
+------
+You should write like the following:
+
+  .. code:: python
+
+    from d2a import copy
+    from .models import TestModel
+    TestDeclaration = copy(TestModel)
+
+
 Links
 =====
 - https://github.com/righ/d2a
+
+History
+=======
+:0.0.1: first release (2017-12-27)
+:0.0.2:
