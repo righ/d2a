@@ -14,7 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+PROJECT_DIR = os.path.join(BASE_DIR, '../../')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -77,8 +77,24 @@ WSGI_APPLICATION = 'sample.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        'NAME': os.path.join(PROJECT_DIR, 'data', 'db.sqlite3'),
+    },
+    'postgres': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'test_db',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'postgres',
+        'PORT': 5432,
+    },
+    'mariadb': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'mysql',
+        'USER': 'mysql',
+        'PASSWORD': 'mysql',
+        'HOST': 'mariadb',
+        'PORT': 3306,
+    },
 }
 
 

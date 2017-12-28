@@ -5,9 +5,9 @@ from django.db import models
 
 
 class CategoryRelation(models.Model):
-    category1 = models.ForeignKey('demo.BookCategory', related_name='parents')
-    category2 = models.ForeignKey('demo.BookCategory', related_name='children')
-    type = models.CharField(max_length=30)
+    category1 = models.ForeignKey('demo.BookCategory', related_name='parents', on_delete=models.CASCADE)
+    category2 = models.ForeignKey('demo.BookCategory', related_name='children', on_delete=models.CASCADE)
+    type = models.CharField(max_length=30, null=True)
 
     class Meta:
         db_table = 'category_relation'
@@ -15,16 +15,20 @@ class CategoryRelation(models.Model):
 
 class Author(models.Model):
     name = models.CharField(max_length=255)
-    age = models.PositiveSmallInteger()
+    age = models.PositiveSmallIntegerField()
 
     class Meta:
         db_table = 'author'
 
 
-class BookCategory(models):
+class BookCategory(models.Model):
     name = models.CharField(max_length=30)
     created = models.DateTimeField(auto_now=True)
-    related = models.ManyToMany('self')
+    related_coming = models.ManyToManyField('self', symmetrical=False,
+                                            through='CategoryRelation', related_name='related_going')
+
+    class Meta:
+        db_table = 'category'
 
 
 class Book(models.Model):
@@ -32,16 +36,16 @@ class Book(models.Model):
     price = models.IntegerField()
     title = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
-    author = models.ForeignKey(Author, null=True)
-    category = models.ManyToMany(BookCategory, symmetrical=False, through='CategoryRelation')
+    author = models.ForeignKey(Author, null=True, on_delete=models.SET_NULL, related_name='books')
+    category = models.ManyToManyField(BookCategory, related_name='books')
 
     class Meta:
         db_table = 'book'
 
 
 class Sales(models.Model):
-    id = models.BigAutoField()
-    book = models.ForeignKey(Book)
+    id = models.BigAutoField(primary_key=True)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='sales')
     sold = models.DateTimeField(auto_now_add=True)
 
     class Meta:
