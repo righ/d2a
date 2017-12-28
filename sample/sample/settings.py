@@ -75,13 +75,13 @@ WSGI_APPLICATION = 'sample.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'sqlite3': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(PROJECT_DIR, 'data', 'db.sqlite3'),
     },
-    'postgres': {
+    'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'test_db',
+        'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': 'postgres',
@@ -90,8 +90,8 @@ DATABASES = {
     'mariadb': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mysql',
-        'USER': 'mysql',
-        'PASSWORD': 'mysql',
+        'USER': 'root',
+        'PASSWORD': 'root',
         'HOST': 'mariadb',
         'PORT': 3306,
     },
