@@ -14,13 +14,14 @@ keywords = [
     'sqlalchemy',
     'model',
     'mapping',
+    'decralation',
     'table',
 ]
 
 setup(
     name='d2a',
     version='0.0.2',
-    install_requires=['Django', 'SQLAlchemy'],
+    install_requires=['Django>=1.9', 'SQLAlchemy>=0.9'],
     description='it converts a django model to a sqlalchemy declaration',
     long_description=open('./README.rst', 'r').read(),
     classifiers=classifiers,
@@ -29,3 +30,4 @@ setup(
     author_email="righ.m9@gmail.com,crohaco@beproud.jp",
     packages=find_packages(exclude=['tests']),
 )
+
