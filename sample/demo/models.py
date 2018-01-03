@@ -42,7 +42,6 @@ class Book(models.Model):
     class Meta:
         db_table = 'book'
 
-
 class Sales(models.Model):
     id = models.BigAutoField(primary_key=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='sales')

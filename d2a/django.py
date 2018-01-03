@@ -2,44 +2,10 @@
 from collections import OrderedDict
 
 from django.db.models.base import ModelBase
-# The following fields are supported django 1.4 or later.
 from django.db import models
-# django >= 1.9
-from django.db.models.fields.related_descriptors import ManyToManyDescriptor as M2MField
 
-types = {
-    models.AutoField: {'type': 'int'},
-    models.IntegerField: {'type': 'int'},
-    models.PositiveIntegerField: {'type': 'int'},
-    models.SmallIntegerField: {'type': 'int'},
-    models.PositiveSmallIntegerField: {'type': 'int', 'unsigned': True},
-    models.BigIntegerField: {'type': 'bigint'},
-    models.DecimalField: {'type': 'decimal',
-                          'callback': lambda f: {'precision': f.max_digits, 'scale': f.decimal_places}},
-    models.FloatField: {'type': 'float'},
-    models.CharField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
-    models.SlugField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
-    models.URLField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
-    models.EmailField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
-    models.FileField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
-    models.FilePathField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
-    models.ImageField: {'type': 'varchar', 'callback': lambda f: {'length': f.max_length}},
-    models.GenericIPAddressField: {'type': {'postgres': 'inet', 'default': 'char'},
-                            'length': 39},
-
-    models.BinaryField: {'postgres': 'bytea', 'default': 'binary'},
-    models.DurationField: {'type': {'postgres': 'interval', 'default': 'bigint'}},
-    models.UUIDField: {'type': {'postgres': 'uuid', 'default': 'char'}, 'length': 32},
-
-    models.TextField: {'type': 'text'},
-    models.DateTimeField: {'type': 'datetime'},
-    models.DateField: {'type': 'date'},
-    models.TimeField: {'type': 'time'},
-    models.BooleanField: {'type': 'boolean'},
-    models.NullBooleanField: {'type': 'boolean'},
-    models.ForeignKey: {'callback': lambda f: {'on_delete': f.on_delete.__name__}},
-    models.OneToOneField: {'callback': lambda f: {'on_delete': f.on_delete.__name__}},
-}
+from .types import mapping
+from .compat import M2MField
 
 
 def get_m2m_fields(model):
@@ -49,44 +15,22 @@ def get_m2m_fields(model):
     }
 
 
-try:
-    # deprecated
-    types[models.CommaSeparatedIntegerField] = {'type': 'varchar',
-                                         'callback': lambda f: {'length': f.max_length}}
-except AttributeError:
-    pass
-
-try:
-    # 1.10 or later supports
-    types[models.BigAutoField] = {'type': 'bigint'}
-except AttributeError:
-    pass
-
-
 def analyze_field(field):
     info = {}
     field_type = type(field)
 
-    if field_type is M2MField:
-        info['secondary'] = analyze_model(field.rel.through)
-        info['related_name'] = field.rel.related_name
-        return info
+    for restriction in ['primary_key', 'unique', 'nullable', 'default']:
+        try:
+            info[restriction] = getattr(field, restriction)
+        except AttributeError:
+            pass
 
-    if field_type is models.ForeignKey or field_type is models.OneToOneField:
-        field_type = type(field.target_field)
-        info['related_to'] = '{table}.{field}'.format(
-            table=field.related_model._meta.db_table,
-            field=field.related_model._meta.pk.attname,
-        )
-
-    info['primary_key'] = field.primary_key
-    info['unique'] = field.unique
-    info['nullable'] = field.null
-    info['default'] = field.default
-
-    info.update(types[field_type])
-    info.update(info.pop('callback', lambda x: {})(field))
-
+    info.update(mapping[field_type])
+    while 'callback' in info:
+        result = info.pop('callback')(field)
+        if isinstance(result, tuple):
+            result, field = result
+        info.update(result)
     return info
 
 

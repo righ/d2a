@@ -1,67 +1,59 @@
 # coding: utf-8
 from collections import OrderedDict
 
-from sqlalchemy import (
-    Column,
-    ForeignKey,
-    types as common_types
-)
+from sqlalchemy import Column, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.dialects import postgresql as postgresql_types
 from sqlalchemy.orm import relationship
 
-
+db_types = [
+    'postgresql', 'mysql', 'oracle', 'sqlite', 'firebird', 'mssql',
+    'default',  # don't move it
+]
 Base = declarative_base()
-
-types = {
-    'int': common_types.INT,
-    'smallint': common_types.SmallInteger,
-    'bigint': common_types.BigInteger,
-    'char': common_types.CHAR,
-    'varchar': common_types.VARCHAR,
-    'text': common_types.Text,
-    'boolean': common_types.Boolean,
-    'time': common_types.Time,
-    'date': common_types.Date,
-    'datetime': common_types.DateTime,
-    'uuid': postgresql_types.UUID,
-    'inet': postgresql_types.INET,
-    'interval': postgresql_types.INTERVAL,
-    'binary': common_types.Binary,
-    'bytea': postgresql_types.BYTEA,
-}
-
-existing_tables = {}
+existing = {}
 
 
 def declare(model_info, db=None, back_type=None):
     table_name = model_info['name']
-    if table_name in existing_tables:
-        return existing_tables[table_name]
+    if table_name in existing:
+        return existing[table_name]
 
-    secondaries = {}
-    cls_kwargs = OrderedDict({'__tablename__': table_name})
+    row_kwargs = OrderedDict({'__tablename__': table_name})
     for name, field in model_info['fields'].items():
-        if 'secondary' in field:
-            field_name = field['secondary']['name']
-            table = secondaries.get(field_name, declare(field['secondary']))
-            kwargs = {back_type: field['related_name']} if back_type else {}
-            cls_kwargs[name] = relationship(field_name, secondary=table, **kwargs)
-            continue
+        col_types = {
+            (db_type if db_type + '_type' in field else 'default'): field.pop(db_type + '_type', {})
+            for db_type in db_types
+        }
+        col_type_options = {
+            (db_type if db_type + '_type_option' in field else 'default'): field.pop(db_type + '_type_option', {})
+            for db_type in db_types
+        }
+        type_key = db if db in col_types else 'default'
+        col_type = col_types.get(type_key)
+        col_type_option = col_type_options.get(type_key, {})
 
-        args = [name]
-        key = field['type']
-        if isinstance(key, dict):
-            key = key.get(db, key['default'])
-        atype = types[key]
-        if key in {'char', 'varchar'}:
-            atype = atype(field['length'])
-        args += [atype]
-        if 'related_to' in field:
-            args += [ForeignKey(field['related_to'], ondelete=field.get('on_delete'))]
-        kwargs = {k: field[k] for k in ['primary_key', 'unique', 'nullable', 'default']}
-        cls_kwargs[name] = Column(*args, **kwargs)
+        rel_option = field.pop('rel_option', None)
+        if col_type:
+            col_args = [col_type(**col_type_option)]
+            if 'fk_option' in field:
+                col_args.append(ForeignKey(**field.pop('fk_option', {})))
 
-    cls = existing_tables[table_name] = type(table_name, (Base,), cls_kwargs)
+            row_kwargs[name] = Column(*col_args, **field)
+
+        if rel_option:
+            if 'secondary' in rel_option:
+                from . import copy
+                rel_option['secondary'] = copy(rel_option['secondary'])
+            
+            if 'logical_name' in rel_option:
+                name = rel_option.pop('logical_name')
+
+            back = rel_option.pop('back', None)
+            if back and back_type:
+                rel_option[back_type] = back
+
+            row_kwargs[name] = relationship(rel_option.pop('target'), **rel_option)
+
+    cls = existing[table_name] = type(table_name, (Base,), row_kwargs)
     return cls
 
