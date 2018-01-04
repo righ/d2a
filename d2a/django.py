@@ -19,7 +19,8 @@ def analyze_field(field):
     info = {}
     field_type = type(field)
 
-    for restriction in ['primary_key', 'unique', 'nullable', 'default']:
+    for restriction in ['primary_key', 'unique', 'nullable']:
+    # for restriction in ['primary_key', 'unique', 'nullable', 'default']:
         try:
             info[restriction] = getattr(field, restriction)
         except AttributeError:

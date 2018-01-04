@@ -11,6 +11,7 @@ db_types = [
 ]
 Base = declarative_base()
 existing = {}
+m2m_models = {}
 
 
 def declare(model_info, db=None, back_type=None):
@@ -43,7 +44,8 @@ def declare(model_info, db=None, back_type=None):
         if rel_option:
             if 'secondary' in rel_option:
                 from . import copy
-                rel_option['secondary'] = copy(rel_option['secondary'])
+                m2m_models[rel_option['secondary']._meta.object_name] = model = copy(rel_option['secondary'])
+                rel_option['secondary'] = model
             
             if 'logical_name' in rel_option:
                 name = rel_option.pop('logical_name')
