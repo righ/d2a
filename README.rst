@@ -54,8 +54,8 @@ Example: you make `models_sqla.py` at a directory which `models.py` has been pla
 
     >>> from demo import models_sqla
     >>> models_sqla.  # tab completion
-    models_sqla.Author(            models_sqla.Category(          models_sqla.Sales(             models_sqla.transfer(
-    models_sqla.Book(              models_sqla.CategoryRelation(  models_sqla.models
+    models_sqla.Author(            models_sqla.BookCategory(      models_sqla.CategoryRelation(  models_sqla.models
+    models_sqla.Book(              models_sqla.Category(          models_sqla.Sales(             models_sqla.transfer(   models_sqla.Book(              models_sqla.CategoryRelation(  models_sqla.models
 
     >>> models_sqla.Book
     <class 'd2a.alchemy.book'>
@@ -69,13 +69,13 @@ You should write like the following:
 
   .. code:: python
 
-    >>> from d2a import copy
+    >>> from d2a import declare
     >>> from demo.models import Sales
-    >>> sales = copy(Sales)
+    >>> sales = declare(Sales)
     >>> sales
     <class 'd2a.alchemy.sales'>
     >>> sales.__table__
-    Table('sales', MetaData(bind=None), Column('id', BigInteger(), table=<sales>, primary_key=True, nullable=False, default=ColumnDefault(<function ColumnDefault._maybe_wrap_callable.<locals>.<lambda> at 0x7f50bd7eb598>)), Column('book_id', CHAR(length=32), ForeignKey('book.id'), table=<sales>, nullable=False, default=ColumnDefault(<function ColumnDefault._maybe_wrap_callable.<locals>.<lambda> at 0x7f50bd7eb7b8>)), Column('sold', DateTime(), table=<sales>, nullable=False, default=ColumnDefault(<function ColumnDefault._maybe_wrap_callable.<locals>.<lambda> at 0x7f50bd7eb9d8>)), schema=None)
+    Table('sales', MetaData(bind=None), Column('id', BIGINT(), table=<sales>, primary_key=True, nullable=False), Column('book_id', CHAR(length=32), ForeignKey('book.id'), table=<sales>), Column('sold', DateTime(), table=<sales>), schema=None)
 
 
 Links
@@ -89,4 +89,9 @@ History
 
   - it supported m2m field.
   - it limited django version less than `1.9`.
+
+:0.0.3:
+
+  - it got easy to declare custom field.
+  - transfer method can define secondary table.
 

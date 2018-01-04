@@ -5,21 +5,23 @@ from sqlalchemy import Column, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
+# django と分離したいけど諦め
+from .django import analyze_model
+
 db_types = [
     'postgresql', 'mysql', 'oracle', 'sqlite', 'firebird', 'mssql',
     'default',  # don't move it
 ]
 Base = declarative_base()
 existing = {}
-m2m_models = {}
 
 
-def declare(model_info, db=None, back_type=None):
-    table_name = model_info['name']
-    if table_name in existing:
-        return existing[table_name]
+def declare(django_model, db=None, back_type=None):
+    model_info = analyze_model(django_model)
+    if django_model in existing:
+        return existing[django_model]
 
-    row_kwargs = OrderedDict({'__tablename__': table_name})
+    row_kwargs = OrderedDict({'__tablename__': model_info['table_name']})
     for name, field in model_info['fields'].items():
         col_types = {
             (db_type if db_type + '_type' in field else 'default'): field.pop(db_type + '_type', {})
@@ -43,9 +45,7 @@ def declare(model_info, db=None, back_type=None):
 
         if rel_option:
             if 'secondary' in rel_option:
-                from . import copy
-                m2m_models[rel_option['secondary']._meta.object_name] = model = copy(rel_option['secondary'])
-                rel_option['secondary'] = model
+                rel_option['secondary'] = declare(rel_option['secondary'])
             
             if 'logical_name' in rel_option:
                 name = rel_option.pop('logical_name')
@@ -56,6 +56,6 @@ def declare(model_info, db=None, back_type=None):
 
             row_kwargs[name] = relationship(rel_option.pop('target'), **rel_option)
 
-    cls = existing[table_name] = type(table_name, (Base,), row_kwargs)
+    cls = existing[django_model] = type(model_info['table_name'], (Base,), row_kwargs)
     return cls
 
