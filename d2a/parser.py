@@ -15,12 +15,11 @@ def get_m2m_fields(model):
     }
 
 
-def analyze_field(field):
+def parse_field(field):
     info = {}
     field_type = type(field)
 
     for restriction in ['primary_key', 'unique', 'nullable']:
-    # for restriction in ['primary_key', 'unique', 'nullable', 'default']:
         try:
             info[restriction] = getattr(field, restriction)
         except AttributeError:
@@ -35,7 +34,7 @@ def analyze_field(field):
     return info
 
 
-def analyze_model(model, callback=analyze_field):
+def parse_model(model, callback=parse_field):
     info = {'table_name': model._meta.db_table, 'fields': OrderedDict()}
     for field in model._meta.fields:
         info['fields'][field.attname] = callback(field)
@@ -46,10 +45,10 @@ def analyze_model(model, callback=analyze_field):
     return info
 
 
-def analyze_models(module, condition=lambda model: True):
+def parse_models(module):
     models = {}
     for name, model in [(name, getattr(module, name)) for name in dir(module)]:
-        if isinstance(model, ModelBase) and condition(model):
+        if isinstance(model, ModelBase):
             models[name] = model
     return models
 
