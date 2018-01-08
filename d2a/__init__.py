@@ -4,14 +4,12 @@ from collections import OrderedDict
 
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import relationship
 
-from .parser import parse_models, parse_model
+from .parsers import parse_models, parse_model
 
-db_types = [
-    'postgresql', 'mysql', 'oracle', 'sqlite', 'firebird', 'mssql',
-    'default',  # don't move it
-]
+db_types = ['postgresql', 'mysql', 'oracle', 'sqlite', 'firebird', 'mssql', 'default']
 Base = declarative_base()
 existing = {}
 
@@ -24,18 +22,6 @@ def declare(django_model, db=None, back_type=None):
     row_kwargs = OrderedDict({'__tablename__': model_info['table_name']})
     for name, field in model_info['fields'].items():
         rel_option = field.pop('rel_option', None)
-        if rel_option:
-            if 'secondary' in rel_option:
-                rel_option['secondary'] = declare(rel_option['secondary'])
-            
-            if 'logical_name' in rel_option:
-                name = rel_option.pop('logical_name')
-
-            back = rel_option.pop('back', None)
-            if back and back_type:
-                rel_option[back_type] = back
-
-            row_kwargs[name] = relationship(rel_option.pop('target'), **rel_option)
 
         col_types = {}
         col_type_options = {}
@@ -51,7 +37,28 @@ def declare(django_model, db=None, back_type=None):
             if 'fk_option' in field:
                 col_args.append(ForeignKey(**field.pop('fk_option', {})))
 
-            row_kwargs[name] = Column(*col_args, **field)
+            column = row_kwargs[name] = Column(*col_args, **field)
+            if rel_option is not None:
+                rel_option['foreign_keys'] = [column]
+
+        if rel_option:
+            if 'secondary_model' in rel_option:
+                secondary_model = rel_option.pop('secondary_model')
+                secondary = rel_option['secondary'] = declare(secondary_model, db=db, back_type=back_type).__table__
+                target_field = rel_option.pop('target_field')
+                remote_primary_field = rel_option.pop('remote_primary_field')
+                remote_secondary_field = rel_option.pop('remote_secondary_field')
+                rel_option['primaryjoin'] = row_kwargs[target_field] == getattr(secondary.c, remote_primary_field)
+                rel_option['secondaryjoin'] = row_kwargs[target_field] == getattr(secondary.c, remote_secondary_field)
+            
+            if 'logical_name' in rel_option:
+                name = rel_option.pop('logical_name')
+
+            back = rel_option.pop('back', None)
+            if back and back_type:
+                rel_option[back_type] = back.rstrip('+')
+
+            row_kwargs[name] = relationship(rel_option.pop('target'), **rel_option)
 
     cls = existing[django_model] = type(model_info['table_name'], (Base,), row_kwargs)
     return cls
@@ -64,11 +71,11 @@ def get_camelcase(s):
     return s
 
 
-def transfer(models, exports, db=None, back_type=None, name_formatter=get_camelcase):
+def transfer(models, exports, db=None, back_type=None, as_table=False, name_formatter=get_camelcase):
     for model in parse_models(models).values():
         declare(model, db=db, back_type=back_type)
 
     for django_model, alchemy_model in existing.items():
         if models.__name__ == django_model.__module__:
-            exports[name_formatter(django_model._meta.object_name)] = alchemy_model
+            exports[name_formatter(django_model._meta.object_name)] = alchemy_model.__table__ if as_table else alchemy_model
 

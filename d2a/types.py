@@ -168,11 +168,14 @@ mapping = {
     M2MField: {
         'callback': lambda f: {
             'rel_option': {
-                'secondary': f.rel.through, 
+                'secondary_model': f.rel.through, 
+                'target_field': f.field.m2m_target_field_name(),
+                'remote_primary_field': f.field.m2m_column_name(),
+                'remote_secondary_field': f.field.m2m_reverse_name(),
                 'back': f.field.related_query_name(),
                 'target': f.rel.model._meta.db_table,
             },
-        },
+        } if not f.reverse else {}
     },
 }
 
