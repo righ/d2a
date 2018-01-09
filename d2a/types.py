@@ -1,5 +1,7 @@
 # coding: utf-8
 from django.db import models
+from django.contrib.postgres import fields as postgres_fields
+
 from sqlalchemy import types as default_types
 from sqlalchemy.dialects import postgresql as postgresql_types
 from sqlalchemy.dialects import mysql as mysql_types
@@ -195,6 +197,22 @@ try:
         'postgresql_type': postgresql_types.BIGINT,
         'mysql_type': mysql_types.BIGINT,
         'autoincrement': True,
+    }
+except AttributeError:
+    pass
+
+try:
+    mapping[postgres_fields.ArrayField] = {
+        'default_type': default_types.ARRAY,
+        'postgresql_type': postgresql_types.ARRAY,
+    }
+except AttributeError:
+    pass
+
+try:
+    mapping[postgres_fields.JSONField] = {
+        'default_type': default_types.JSON,
+        'postgresql_type': postgresql_types.JSON,
     }
 except AttributeError:
     pass
