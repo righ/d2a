@@ -16,7 +16,7 @@ coverage.xml
 junit-py*.xml
 .junit.xml
 
-^data/*
+data/
 
 .bash_history
 .python_history
