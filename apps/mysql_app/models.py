@@ -1,5 +1,4 @@
 # coding: utf-8
-
 import uuid
 from django.db import models
 
@@ -10,7 +9,7 @@ class CategoryRelation(models.Model):
     type = models.CharField(max_length=30, null=True)
 
     class Meta:
-        db_table = 'category_relation'
+        db_table = 'mysql_category_relation'
 
 
 class Author(models.Model):
@@ -18,7 +17,7 @@ class Author(models.Model):
     age = models.PositiveSmallIntegerField()
 
     class Meta:
-        db_table = 'author'
+        db_table = 'mysql_author'
 
 
 class Category(models.Model):
@@ -28,7 +27,7 @@ class Category(models.Model):
                                             through='CategoryRelation', related_name='related_going')
 
     class Meta:
-        db_table = 'category'
+        db_table = 'mysql_category'
 
 
 class Book(models.Model):
@@ -38,16 +37,19 @@ class Book(models.Model):
     description = models.TextField(null=True, blank=True)
     author = models.ForeignKey(Author, null=True, on_delete=models.SET_NULL, related_name='books')
     category = models.ManyToManyField(Category, related_name='books')
+    content = models.BinaryField()
 
     class Meta:
-        db_table = 'book'
+        db_table = 'mysql_book'
 
 
 class Sales(models.Model):
     id = models.BigAutoField(primary_key=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='sales')
     sold = models.DateTimeField(auto_now_add=True)
+    reservation = models.DurationField(null=True)
+    source = models.GenericIPAddressField(null=True)
 
     class Meta:
-        db_table = 'sales'
+        db_table = 'mysql_sales'
 
