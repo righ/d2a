@@ -11,5 +11,5 @@ DATABASES = {
     },
 }
 
-INSTALL_APPS += ('postgresql_app',)
+INSTALLED_APPS += ('postgresql_app',)
 

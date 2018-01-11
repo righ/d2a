@@ -4,8 +4,8 @@ from django.db import models
 
 
 class CategoryRelation(models.Model):
-    category1 = models.ForeignKey('demo.Category', related_name='parents', on_delete=models.CASCADE)
-    category2 = models.ForeignKey('demo.Category', related_name='children', on_delete=models.CASCADE)
+    category1 = models.ForeignKey('Category', related_name='parents', on_delete=models.CASCADE)
+    category2 = models.ForeignKey('Category', related_name='children', on_delete=models.CASCADE)
     type = models.CharField(max_length=30, null=True)
 
     class Meta:

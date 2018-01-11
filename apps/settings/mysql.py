@@ -11,5 +11,5 @@ DATABASES = {
     },
 }
 
-INSTALL_APPS += ('mysql_app',)
+INSTALLED_APPS += ('mysql_app',)
 
