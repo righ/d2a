@@ -77,6 +77,20 @@ You should write like the following:
     >>> sales.__table__
     Table('sales', MetaData(bind=None), Column('id', BIGINT(), table=<sales>, primary_key=True, nullable=False), Column('book_id', CHAR(length=32), ForeignKey('book.id'), table=<sales>), Column('sold', DateTime(), table=<sales>), schema=None)
 
+Custom fields
+-------------
+If you are using customized field which is not built-in, you can register the field as the other field using `alias` method.
+
+.. code:: python
+
+  from django.db.models import ImageField
+  
+  class ExtendedImageField(ImageField):
+      """something customizing"""
+  
+  from d2a import alias
+  alias(ExtendedImageField, ImageField)
+
 
 Links
 =====
@@ -95,3 +109,10 @@ History
   - it got easy to declare custom field.
   - transfer method can define secondary table.
 
+:0.0.4:
+
+  - fixed bugs.
+
+:0.0.5:
+
+  - added alias method.

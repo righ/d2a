@@ -217,3 +217,7 @@ try:
 except AttributeError:
     pass
 
+
+def alias(new_field, existing_field):
+    mapping[new_field] = mapping[existing_field]
+
