@@ -116,3 +116,8 @@ History
 :0.0.5:
 
   - added alias method.
+
+:0.0.6:
+
+  - Fixed a bug that abstract model become the target.
+  - Deleted `install_requires`.
