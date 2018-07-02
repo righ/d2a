@@ -11,171 +11,171 @@ from .compat import M2MField
 
 mapping = {
     models.AutoField: {
-        'default_type': default_types.INT,
-        'postgresql_type': postgresql_types.INTEGER,
-        'mysql_type': mysql_types.INTEGER,
+        '_default_type': default_types.INT,
+        '_postgresql_type': postgresql_types.INTEGER,
+        '_mysql_type': mysql_types.INTEGER,
         'autoincrement': True,
     },
     models.IntegerField: {
-        'default_type': default_types.INT,
-        'postgresql_type': postgresql_types.INTEGER,
-        'mysql_type': mysql_types.INTEGER,
+        '_default_type': default_types.INT,
+        '_postgresql_type': postgresql_types.INTEGER,
+        '_mysql_type': mysql_types.INTEGER,
     },
     models.PositiveIntegerField: {
-        'default_type': default_types.INT, 
-        'postgresql_type': postgresql_types.INTEGER,
-        'mysql_type': mysql_types.INTEGER,
-        'mysql_type_option': {'unsigned': True},
+        '_default_type': default_types.INT, 
+        '_postgresql_type': postgresql_types.INTEGER,
+        '_mysql_type': mysql_types.INTEGER,
+        '_mysql_type_option': {'unsigned': True},
     },
     models.SmallIntegerField: {
-        'default_type': default_types.SMALLINT, 
-        'postgresql_type': postgresql_types.SMALLINT,
-        'mysql_type': mysql_types.SMALLINT,
+        '_default_type': default_types.SMALLINT, 
+        '_postgresql_type': postgresql_types.SMALLINT,
+        '_mysql_type': mysql_types.SMALLINT,
     },
     models.PositiveSmallIntegerField: {
-        'default_type': default_types.SMALLINT, 
-        'postgresql_type': postgresql_types.SMALLINT, 
-        'mysql_type': mysql_types.SMALLINT, 
-        'mysql_type_option': {'unsigned': True},
+        '_default_type': default_types.SMALLINT, 
+        '_postgresql_type': postgresql_types.SMALLINT, 
+        '_mysql_type': mysql_types.SMALLINT, 
+        '_mysql_type_option': {'unsigned': True},
     },
     models.BigIntegerField: {
-        'default_type': default_types.BIGINT, 
-        'postgresql_type': postgresql_types.BIGINT,
-        'mysql_type': mysql_types.BIGINT,
+        '_default_type': default_types.BIGINT, 
+        '_postgresql_type': postgresql_types.BIGINT,
+        '_mysql_type': mysql_types.BIGINT,
     },
     models.DecimalField: {
-        'default_type': default_types.DECIMAL,
-        'postgresql_type': postgresql_types.NUMERIC,
-        'mysql_type': mysql_types.NUMERIC,
-        'callback': lambda f: {
-            'default_type_option': {'precision': f.max_digits, 'scale': f.decimal_places},
-            'postgresql_type_option': {'precision': f.max_digits, 'scale': f.decimal_places},
-            'mysql_type_option': {'precision': f.max_digits, 'scale': f.decimal_places},
+        '_default_type': default_types.DECIMAL,
+        '_postgresql_type': postgresql_types.NUMERIC,
+        '_mysql_type': mysql_types.NUMERIC,
+        '_callback': lambda f: {
+            '_default_type_option': {'precision': f.max_digits, 'scale': f.decimal_places},
+            '_postgresql_type_option': {'precision': f.max_digits, 'scale': f.decimal_places},
+            '_mysql_type_option': {'precision': f.max_digits, 'scale': f.decimal_places},
         }
     },
     models.FloatField: {
-        'default_type': default_types.FLOAT,
-        'default_type': postgresql_types.FLOAT,
-        'default_type': mysql_types.FLOAT,
+        '_default_type': default_types.FLOAT,
+        '_postgresql_type': postgresql_types.FLOAT,
+        '_mysql_type': mysql_types.FLOAT,
     },
     models.CharField: {
-        'default_type': default_types.VARCHAR, 
-        'callback': lambda f: {
-            'default_type_option': {'length': f.max_length},
+        '_default_type': default_types.VARCHAR, 
+        '_callback': lambda f: {
+            '_default_type_option': {'length': f.max_length},
         },
     },
     models.SlugField: {
-        'default_type': default_types.VARCHAR, 
-        'callback': lambda f: {
-            'default_type_option': {'length': f.max_length},
+        '_default_type': default_types.VARCHAR, 
+        '_callback': lambda f: {
+            '_default_type_option': {'length': f.max_length},
         },
     },
     models.URLField: {
-        'default_type': default_types.VARCHAR, 
-        'callback': lambda f: {
-            'default_type_option': {'length': f.max_length},
+        '_default_type': default_types.VARCHAR, 
+        '_callback': lambda f: {
+            '_default_type_option': {'length': f.max_length},
         },
     },
     models.EmailField: {
-        'default_type': default_types.VARCHAR, 
-        'callback': lambda f: {
-            'default_type_option': {'length': f.max_length},
+        '_default_type': default_types.VARCHAR, 
+        '_callback': lambda f: {
+            '_default_type_option': {'length': f.max_length},
         },
     },
     models.FileField: {
-        'default_type': default_types.VARCHAR, 
-        'callback': lambda f: {
-            'default_type_option': {'length': f.max_length},
+        '_default_type': default_types.VARCHAR, 
+        '_callback': lambda f: {
+            '_default_type_option': {'length': f.max_length},
         },
     },
     models.FilePathField: {
-        'default_type': default_types.VARCHAR, 
-        'callback': lambda f: {
-            'default_type_option': {'length': f.max_length},
+        '_default_type': default_types.VARCHAR, 
+        '_callback': lambda f: {
+            '_default_type_option': {'length': f.max_length},
         },
     },
     models.ImageField: {
-        'default_type': default_types.VARCHAR, 
-        'callback': lambda f: {
-            'default_type_option': {'length': f.max_length},
+        '_default_type': default_types.VARCHAR, 
+        '_callback': lambda f: {
+            '_default_type_option': {'length': f.max_length},
         },
     },
     models.GenericIPAddressField: {
-        'default_type': default_types.CHAR,
-        'postgresql_type': postgresql_types.INET, 
-        'default_type_option': {'length': 39},
+        '_default_type': default_types.CHAR,
+        '_postgresql_type': postgresql_types.INET, 
+        '_default_type_option': {'length': 39},
     },
     models.BinaryField: {
-        'default_type': default_types.Binary,
-        'postgresql_type': postgresql_types.BYTEA,
-        'mysql_type': mysql_types.LONGBLOB,
+        '_default_type': default_types.Binary,
+        '_postgresql_type': postgresql_types.BYTEA,
+        '_mysql_type': mysql_types.LONGBLOB,
     },
     models.DurationField: {
-        'default_type': default_types.BIGINT,
-        'postgresql_type': postgresql_types.INTERVAL,
+        '_default_type': default_types.BIGINT,
+        '_postgresql_type': postgresql_types.INTERVAL,
     },
     models.UUIDField: {
-        'default_type': default_types.CHAR,
-        'postgresql_type': postgresql_types.UUID,
-        'default_type_option': {'length': 32},
+        '_default_type': default_types.CHAR,
+        '_postgresql_type': postgresql_types.UUID,
+        '_default_type_option': {'length': 32},
     },
     models.TextField: {
-        'default_type': default_types.Text,
+        '_default_type': default_types.Text,
     },
     models.DateTimeField: {
-        'default_type': default_types.DateTime,
+        '_default_type': default_types.DateTime,
     },
     models.DateField: {
-        'default_type': default_types.Date,
+        '_default_type': default_types.Date,
     },
     models.TimeField: {
-        'default_type': default_types.Time,
+        '_default_type': default_types.Time,
     },
     models.BooleanField: {
-        'default_type': default_types.Boolean,
+        '_default_type': default_types.Boolean,
     },
     models.NullBooleanField: {
-        'default_type': default_types.Boolean,
+        '_default_type': default_types.Boolean,
         'null': True,
     },
     models.ForeignKey: {
-        'callback': lambda f: {
-            'callback': lambda f: (mapping[type(f.target_field)], f.target_field),
-            'rel_option': {
-                'logical_name': f.name, 
-                'back': f.related_query_name(),
-                'target': f.related_model()._meta.db_table,
+        '_callback': lambda f: {
+            '_callback': lambda f: (mapping[type(f.target_field)], f.target_field),
+            '_rel_option': {
+                '_logical_name': f.name, 
+                '_back': f.related_query_name(),
+                '_target': f.related_model()._meta.db_table,
             }, 
-            'fk_option': {
+            '_fk_option': {
                 'column': '{meta.db_table}.{meta.pk.attname}'.format(meta=f.related_model._meta),
                 'ondelete': f.remote_field.on_delete.__name__,
             },
         },
     },
     models.OneToOneField: {
-        'callback': lambda f: {
-            'callback': lambda f: (mapping[type(f.target_field)], f.target_field),
-            'rel_option': {
-                'logical_name': f.name, 
-                'back': f.related_query_name(), 
-                'target': f.related_model()._meta.db_table,
+        '_callback': lambda f: {
+            '_callback': lambda f: (mapping[type(f.target_field)], f.target_field),
+            '_rel_option': {
+                '_logical_name': f.name, 
+                '_back': f.related_query_name(), 
+                '_target': f.related_model()._meta.db_table,
                 'uselist': False,
             }, 
-            'fk_option': {
+            '_fk_option': {
                 'column': '{meta.db_table}.{meta.pk.attname}'.format(meta=f.related_model._meta),
                 'ondelete': f.remote_field.on_delete.__name__,
             },
         },
     },
     M2MField: {
-        'callback': lambda f: {
-            'rel_option': {
-                'secondary_model': f.rel.through, 
-                'target_field': f.field.m2m_target_field_name(),
-                'remote_primary_field': f.field.m2m_column_name(),
-                'remote_secondary_field': f.field.m2m_reverse_name(),
-                'back': f.field.related_query_name(),
-                'target': f.rel.model._meta.db_table,
+        '_callback': lambda f: {
+            '_rel_option': {
+                '_secondary_model': f.rel.through, 
+                '_target_field': f.field.m2m_target_field_name(),
+                '_remote_primary_field': f.field.m2m_column_name(),
+                '_remote_secondary_field': f.field.m2m_reverse_name(),
+                '_back': f.field.related_query_name(),
+                '_target': f.rel.model._meta.db_table,
             },
         } if not f.reverse else {}
     },
@@ -184,8 +184,8 @@ mapping = {
 try:
     # deprecated
     mapping[models.CommaSeparatedIntegerField] = {
-        'default_type': default_types.VARCHAR,
-        'callback': lambda f: {'default_type_option': {'length': f.max_length}}
+        '_default_type': default_types.VARCHAR,
+        '_callback': lambda f: {'_default_type_option': {'length': f.max_length}}
     }
 except AttributeError:
     pass
@@ -193,9 +193,9 @@ except AttributeError:
 try:
     # 1.10 or later supports
     mapping[models.BigAutoField] = {
-        'default_type': default_types.BIGINT, 
-        'postgresql_type': postgresql_types.BIGINT,
-        'mysql_type': mysql_types.BIGINT,
+        '_default_type': default_types.BIGINT, 
+        '_postgresql_type': postgresql_types.BIGINT,
+        '_mysql_type': mysql_types.BIGINT,
         'autoincrement': True,
     }
 except AttributeError:
@@ -203,16 +203,20 @@ except AttributeError:
 
 try:
     mapping[postgres_fields.ArrayField] = {
-        'default_type': default_types.ARRAY,
-        'postgresql_type': postgresql_types.ARRAY,
+        '_default_type': default_types.ARRAY,
+        '_postgresql_type': postgresql_types.ARRAY,
+        '_callback': lambda f: {
+            '_default_type_option': {'item_type': mapping[type(f.base_field)]['_default_type']},
+            '_postgresql_type_option': {'item_type': mapping[type(f.base_field)]['_default_type']},
+        }
     }
 except AttributeError:
     pass
 
 try:
     mapping[postgres_fields.JSONField] = {
-        'default_type': default_types.JSON,
-        'postgresql_type': postgresql_types.JSON,
+        '_default_type': default_types.JSON,
+        '_postgresql_type': postgresql_types.JSON,
     }
 except AttributeError:
     pass

@@ -21,3 +21,4 @@ data/
 .bash_history
 .python_history
 .config/
+.vscode/
