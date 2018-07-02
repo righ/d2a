@@ -1,4 +1,4 @@
-Django==2.0
+Django==2.0.7
 SQLAlchemy==1.2.0
 
 PyMySQL==0.9.0

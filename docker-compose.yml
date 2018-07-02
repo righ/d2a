@@ -4,6 +4,7 @@ services:
   app:
     image: python:latest
     environment:
+      - LANG='en_US.UTF-8'
       - PYTHONDONTWRITEBYTECODE=1
     tty: true
     command: /bin/bash
