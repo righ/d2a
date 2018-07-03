@@ -33,19 +33,19 @@ class TestMySQL(object):
             'id': {
                 'primary_key': True,
                 'unique': True,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.mysql.types.INTEGER,
                 'nullable': False,
             },
             'category1_id': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.mysql.types.INTEGER,
                 'nullable': False,
             },
             'category2_id': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.mysql.types.INTEGER,
                 'nullable': False,
             },
             'type': {
@@ -63,7 +63,7 @@ class TestMySQL(object):
             'id': {
                 'primary_key': True,
                 'unique': True,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.mysql.types.INTEGER,
                 'nullable': False,
             },
             'name': {
@@ -75,7 +75,7 @@ class TestMySQL(object):
             'age': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.SMALLINT,
+                'type': sa.dialects.mysql.types.SMALLINT,
                 'nullable': False,
             },
 
@@ -88,7 +88,7 @@ class TestMySQL(object):
             'id': {
                 'primary_key': True,
                 'unique': True,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.mysql.types.INTEGER,
                 'nullable': False,
             },
             'name': {
@@ -113,13 +113,13 @@ class TestMySQL(object):
             'id': {
                 'primary_key': True,
                 'unique': True,
-                'type': sa.dialects.postgresql.UUID,
+                'type': sa.sql.sqltypes.CHAR,
                 'nullable': False,
             },
             'price': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.dialects.postgresql.JSON,
+                'type': sa.dialects.mysql.types.INTEGER,
                 'nullable': False,
             },
             'title': {
@@ -137,19 +137,13 @@ class TestMySQL(object):
             'author_id': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.mysql.types.INTEGER,
                 'nullable': True,
             },
             'content': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.dialects.postgresql.BYTEA,
-                'nullable': False,
-            },
-            'tags': {
-                'primary_key': False,
-                'unique': False,
-                'type': sa.dialects.postgresql.ARRAY,
+                'type': sa.dialects.mysql.LONGBLOB,
                 'nullable': False,
             },
         }
@@ -161,19 +155,19 @@ class TestMySQL(object):
             'id': {
                 'primary_key': True,
                 'unique': True,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.mysql.types.INTEGER,
                 'nullable': False,
             },
             'book_id': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.dialects.postgresql.UUID,
+                'type': sa.sql.sqltypes.CHAR,
                 'nullable': False,
             },
             'category_id': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.mysql.types.INTEGER,
                 'nullable': False,
             },
         }
@@ -185,13 +179,13 @@ class TestMySQL(object):
             'id': {
                 'primary_key': True,
                 'unique': True,
-                'type': sa.sql.sqltypes.BIGINT,
+                'type': sa.dialects.mysql.types.BIGINT,
                 'nullable': False,
             },
             'book_id': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.dialects.postgresql.UUID,
+                'type': sa.sql.sqltypes.CHAR,
                 'nullable': False,
             },
             'sold': {
@@ -203,13 +197,13 @@ class TestMySQL(object):
             'reservation': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.dialects.postgresql.INTERVAL,
+                'type': sa.sql.sqltypes.BIGINT,
                 'nullable': True,
             },
             'source': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.dialects.postgresql.INET,
+                'type': sa.sql.sqltypes.CHAR,
                 'nullable': True,
             },
 
