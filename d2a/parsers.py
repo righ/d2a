@@ -4,7 +4,7 @@ from collections import OrderedDict
 from django.db.models.base import ModelBase
 from django.db import models
 
-from .types import mapping
+from .fields import mapping
 from .compat import M2MField
 
 
@@ -19,11 +19,13 @@ def parse_field(field):
     info = {}
     field_type = type(field)
 
-    for restriction in ['primary_key', 'unique', 'nullable']:
-        try:
-            info[restriction] = getattr(field, restriction)
-        except AttributeError:
-            pass
+    for dj_restriction, alchemy_restriction in [
+        ('primary_key', 'primary_key'), 
+        ('unique', 'unique'), 
+        ('null', 'nullable'),
+    ]:
+        if hasattr(field, dj_restriction):
+            info[alchemy_restriction] = getattr(field, dj_restriction)
 
     info.update(mapping[field_type])
     while '_callback' in info:

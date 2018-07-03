@@ -6,7 +6,7 @@ from sqlalchemy import types as default_types
 from sqlalchemy.dialects import postgresql as postgresql_types
 from sqlalchemy.dialects import mysql as mysql_types
 
-from .compat import M2MField
+from d2a.compat import M2MField
 
 
 mapping = {
@@ -136,7 +136,7 @@ mapping = {
     },
     models.NullBooleanField: {
         '_default_type': default_types.Boolean,
-        'null': True,
+        'nullable': True,
     },
     models.ForeignKey: {
         '_callback': lambda f: {

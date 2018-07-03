@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship
 
 from .parsers import parse_models, parse_model
 from .utils import get_camelcase
-from .types import alias
+from .fields import alias
 
 DB_TYPES = ['postgresql', 'mysql', 'oracle', 'sqlite', 'firebird', 'mssql', 'default']
 

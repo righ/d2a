@@ -3,7 +3,7 @@ import pytest
 
 class Test_alias(object):
     def _callFUT(self, new_field, existing_field):
-        from d2a.types import alias
+        from fields import alias
         return alias(new_field, existing_field)
 
     @pytest.fixture()
@@ -19,5 +19,5 @@ class Test_alias(object):
 
     def test_new_field_added(self, newfield, charfield):
         self._callFUT(newfield, charfield)
-        from d2a.types import mapping
+        from fields import mapping
         assert newfield in mapping
