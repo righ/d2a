@@ -26,7 +26,7 @@ def declare(django_model, db=None, back_type=None):
         return existing[django_model]
 
     rel_options = OrderedDict()
-    rows = OrderedDict({'__tablename__': model_info['table_name']})
+    attrs = OrderedDict({'__tablename__': model_info['table_name']})
     for name, fields in model_info['fields'].items():
         rel_option = fields.get('_rel_option', {})
         if rel_option:
@@ -44,15 +44,15 @@ def declare(django_model, db=None, back_type=None):
             if '_fk_option' in fields:
                 col_args.append(ForeignKey(**_extract_kwargs(fields['_fk_option'])))
 
-            column = rows[name] = Column(*col_args, **_extract_kwargs(fields))
+            column = attrs[name] = Column(*col_args, **_extract_kwargs(fields))
             rel_option['foreign_keys'] = [column]
 
     for logical_name, rel_option in rel_options.items():
         if '_secondary_model' in rel_option:
             secondary = rel_option['secondary'] = declare(rel_option['_secondary_model'], db=db, back_type=back_type).__table__
             target_field = rel_option['_target_field']
-            rel_option['primaryjoin'] = rows[target_field] == secondary.c[rel_option['_remote_primary_field']]
-            rel_option['secondaryjoin'] = rows[target_field] == secondary.c[rel_option['_remote_secondary_field']]
+            rel_option['primaryjoin'] = attrs[target_field] == secondary.c[rel_option['_remote_primary_field']]
+            rel_option['secondaryjoin'] = attrs[target_field] == secondary.c[rel_option['_remote_secondary_field']]
         
         if '_logical_name' in rel_option:
             logical_name = rel_option['_logical_name']
@@ -61,9 +61,9 @@ def declare(django_model, db=None, back_type=None):
         if back and back_type:
             rel_option[back_type] = back.rstrip('+')
 
-        rows[logical_name] = relationship(rel_option['_target'], **_extract_kwargs(rel_option))
+        attrs[logical_name] = relationship(rel_option['_target'], **_extract_kwargs(rel_option))
 
-    cls = existing[django_model] = type(model_info['table_name'], (Base,), rows)
+    cls = existing[django_model] = type(model_info['table_name'], (Base,), attrs)
     return cls
 
 

@@ -20,13 +20,13 @@ keywords = [
 
 setup(
     name='d2a',
-    version='0.0.6',
-    description='it converts a django model to a sqlalchemy declaration',
+    version='0.0.7',
+    description='it converts django models to sqlalchemy declarations',
     long_description=open('./README.rst', 'r').read(),
     classifiers=classifiers,
     keywords=', '.join(keywords),
     author='righ',
     author_email="righ.m9@gmail.com,crohaco@beproud.jp",
-    packages=find_packages(exclude=['tests']),
+    packages=find_packages(exclude=['tests', 'projects_*']),
 )
 

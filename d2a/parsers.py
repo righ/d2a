@@ -19,13 +19,14 @@ def parse_field(field):
     info = {}
     field_type = type(field)
 
-    for dj_restriction, alchemy_restriction in [
+    for django_attr, alchemy_attr in [
         ('primary_key', 'primary_key'), 
         ('unique', 'unique'), 
         ('null', 'nullable'),
+        ('default', 'default')
     ]:
-        if hasattr(field, dj_restriction):
-            info[alchemy_restriction] = getattr(field, dj_restriction)
+        if hasattr(field, django_attr):
+            info[alchemy_attr] = getattr(field, django_attr)
 
     info.update(mapping[field_type])
     while '_callback' in info:
