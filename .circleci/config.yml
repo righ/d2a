@@ -1,9 +1,10 @@
 version: 2
-
 jobs:
   build:
     docker:
-      - image: python:latest
+      # specify the version you desire here
+      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
+      - image: circleci/python:3.6.1
         environment:
           POSTGRES_HOST: localhost
       - image: postgres:latest
@@ -11,8 +12,43 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres
           POSTGRES_PORT: 5432
+      - image: mysql:latest
+    working_directory: ~/repo
+
     steps:
       - checkout
-      - run: python -m venv venv
-      - run: venv/bin/pip install tox
-- run: venv/bin/tox
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "test_requirements.txt" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r test_requirements.txt
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "test_requirements.txt" }}
+        
+      # run tests!
+      # this example uses Django's built-in test-runner
+      # other common Python testing frameworks include pytest and nose
+      # https://pytest.org
+      # https://nose.readthedocs.io
+      - run:
+          name: run tests
+          command: |
+            . venv/bin/activate
+            tox
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+          
