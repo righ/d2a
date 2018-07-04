@@ -15,7 +15,6 @@ def info(table):
     return i
 
 
-@pytest.mark.skipif("os.environ.get('DB_TYPE') != 'postgresql'")
 class TestPostgreSQL(object):
     @pytest.fixture
     def books(self):

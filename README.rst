@@ -2,9 +2,9 @@ it converts a django model to a sqlalchemy declaration.
 
 Requirements
 ============
-- Python: ? (not tested)
-- Django: 1.9 ~ 2.0 (not tested)
-- SQLAlchemy: 0.9 ~ 1.2 (not tested)
+- Python: 2.7, 3.6
+- Django: 1.9 ~ 2.0
+- SQLAlchemy: 0.9 ~ 1.2
 
 Installation
 ============
@@ -18,7 +18,7 @@ Usage
 
 altogether
 ----------
-Example: you make `models_sqla.py` at a directory which `models.py` has been placed on.
+Example: you make `models_sqla.py` at the same directory which `models.py` has been placed on.
 
 - And write like the following to the `models_sqla.py`:
 
@@ -28,9 +28,18 @@ Example: you make `models_sqla.py` at a directory which `models.py` has been pla
      from . import models
      transfer(models, globals())
 
+  - Example:
+    
+    - `project_postgresql/books/models_sqla.py <https://github.com/righ/d2a/blob/master/project_postgresql/books/models_sqla.py>`_
+    - `project_postgresql/sales/models_sqla.py <https://github.com/righ/d2a/blob/master/project_postgresql/sales/models_sqla.py>`_
+    - You can omit specifying `db_type`, then it automatically detect database type from ``settings.DATABASES['default']``.
+
+      - Allowed `db_type` is now `postgresql` and `mysql`,
+        the other types will be converted to the following types as ``default`` type: 
+        `sqlalchemy/types.py <https://github.com/zzzeek/sqlalchemy/blob/master/lib/sqlalchemy/types.py>`_
+
 - That's all, you can import sqlalchemy declaration made from django model.
 
-  - Example: `demo/models.py <https://github.com/righ/d2a/blob/master/sample/demo/models.py>`_ and `demo/models_sqla.py <https://github.com/righ/d2a/blob/master/sample/demo/models_sqla.py>`_ exist.
 
   .. code:: python
 
@@ -91,6 +100,40 @@ If you are using customized field which is not built-in, you can register the fi
   from d2a import alias
   alias(ExtendedImageField, ImageField)
 
+Demo
+============
+
+start up environment
+--------------------
+
+.. code-block:: shell
+
+  $ git clone git@github.com:righ/d2a.git
+  $ cd d2a
+  $ docker-compose up
+
+preparation
+--------------------
+
+.. code-block:: shell 
+
+  $ docker exec -it d2a_app_1 /bin/bash
+  # python -m venv venv # only first time
+  # source venv/bin/activate
+  (venv) # cd project_postgresql/ # (or mysql)
+  (venv) project_postgresql # ./manage.py migrate
+
+execute
+------------
+
+.. code-block:: shell
+
+  (venv) project_postgresql # ./manage.py shell
+
+.. code-block:: python
+
+  >>> from books import models_sqla
+  >>> # and do something
 
 Links
 =====
@@ -121,3 +164,8 @@ History
 
   - Fixed a bug that abstract model become the target.
   - Deleted `install_requires`.
+
+:0.0.7:
+
+  - Fixed a bug
+  - Added unit tests.
