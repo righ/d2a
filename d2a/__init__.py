@@ -20,7 +20,7 @@ def _extract_kwargs(kwargs):
     return {k: v for k, v in kwargs.items() if not k.startswith('_')}
 
 
-def declare(django_model, db=None, back_type=None):
+def declare(django_model, db_type=None, back_type=None):
     model_info = parse_model(django_model)
     if django_model in existing:
         return existing[django_model]
@@ -34,11 +34,11 @@ def declare(django_model, db=None, back_type=None):
 
         col_types = {}
         col_type_options = {}
-        for db_type in DB_TYPES:
-            col_types[db_type] = fields.get('_{}_type'.format(db_type), None)
-            col_type_options[db_type] = fields.get('_{}_type_option'.format(db_type), {})
+        for _db_type in DB_TYPES:
+            col_types[_db_type] = fields.get('_{}_type'.format(_db_type), None)
+            col_type_options[_db_type] = fields.get('_{}_type_option'.format(_db_type), {})
 
-        type_key = 'default' if col_types.get(db) is None else db
+        type_key = 'default' if col_types.get(db_type) is None else db_type
         if col_types[type_key]:
             col_args = [col_types[type_key](**col_type_options[type_key])]
             if '_fk_option' in fields:
@@ -49,7 +49,7 @@ def declare(django_model, db=None, back_type=None):
 
     for logical_name, rel_option in rel_options.items():
         if '_secondary_model' in rel_option:
-            secondary = rel_option['secondary'] = declare(rel_option['_secondary_model'], db=db, back_type=back_type).__table__
+            secondary = rel_option['secondary'] = declare(rel_option['_secondary_model'], db_type=db_type, back_type=back_type).__table__
             target_field = rel_option['_target_field']
             rel_option['primaryjoin'] = attrs[target_field] == secondary.c[rel_option['_remote_primary_field']]
             rel_option['secondaryjoin'] = attrs[target_field] == secondary.c[rel_option['_remote_secondary_field']]
@@ -67,9 +67,9 @@ def declare(django_model, db=None, back_type=None):
     return cls
 
 
-def transfer(models, exports, db=None, back_type=None, as_table=False, name_formatter=get_camelcase):
+def transfer(models, exports, db_type=None, back_type=None, as_table=False, name_formatter=get_camelcase):
     for model in parse_models(models).values():
-        declare(model, db=db, back_type=back_type)
+        declare(model, db_type=db_type, back_type=back_type)
 
     for django_model, alchemy_model in existing.items():
         if models.__name__ == django_model.__module__:
