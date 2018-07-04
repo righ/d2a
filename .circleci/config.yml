@@ -1,0 +1,18 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: python:latest
+        environment:
+          POSTGRES_HOST: localhost
+      - image: postgres:latest
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_PORT: 5432
+    steps:
+      - checkout
+      - run: python -m venv venv
+      - run: venv/bin/pip install tox
+- run: venv/bin/tox
