@@ -1,6 +1,8 @@
 # coding: utf-8
 from collections import OrderedDict
 
+from django.conf import settings
+
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -10,17 +12,26 @@ from .parsers import parse_models, parse_model
 from .utils import get_camelcase
 from .fields import alias
 
-DB_TYPES = ['postgresql', 'mysql', 'oracle', 'sqlite', 'firebird', 'mssql', 'default']
+DB_TYPES = ['postgresql', 'mysql', 'oracle', 'sqlite3', 'firebird', 'mssql', 'default']
 
 Base = declarative_base()
 existing = {}
+
+
+AUTO_DETECTED_DB_TYPE = {
+    'django.db.backends.postgresql': 'postgresql',
+    'django.db.backends.postgresql_psycopg2': 'postgresql',
+    'django.db.backends.mysql': 'mysql',
+    # 'django.db.backends.sqlite3': 'sqlite3',
+    # 'django.db.backends.oracle': 'oracle',
+}.get(settings.DATABASES['default']['ENGINE'])
 
 
 def _extract_kwargs(kwargs):
     return {k: v for k, v in kwargs.items() if not k.startswith('_')}
 
 
-def declare(django_model, db_type=None, back_type=None):
+def declare(django_model, db_type=AUTO_DETECTED_DB_TYPE, back_type=None):
     model_info = parse_model(django_model)
     if django_model in existing:
         return existing[django_model]
@@ -67,7 +78,7 @@ def declare(django_model, db_type=None, back_type=None):
     return cls
 
 
-def transfer(models, exports, db_type=None, back_type=None, as_table=False, name_formatter=get_camelcase):
+def transfer(models, exports, db_type=AUTO_DETECTED_DB_TYPE, back_type=None, as_table=False, name_formatter=get_camelcase):
     for model in parse_models(models).values():
         declare(model, db_type=db_type, back_type=back_type)
 
