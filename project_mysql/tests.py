@@ -15,7 +15,6 @@ def info(table):
     return i
 
 
-@pytest.mark.skipif("os.environ.get('DB_TYPE') != 'mysql'")
 class TestMySQL(object):
     @pytest.fixture
     def books(self):
@@ -51,7 +50,7 @@ class TestMySQL(object):
             'type': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.VARCHAR,
+                'type': sa.dialects.mysql.types.VARCHAR,
                 'nullable': True,
             },
         }
@@ -69,7 +68,7 @@ class TestMySQL(object):
             'name': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.VARCHAR,
+                'type': sa.dialects.mysql.types.VARCHAR,
                 'nullable': False,
             },
             'age': {
@@ -94,13 +93,13 @@ class TestMySQL(object):
             'name': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.VARCHAR,
+                'type': sa.dialects.mysql.types.VARCHAR,
                 'nullable': False,
             },
             'created': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.DateTime,
+                'type': sa.dialects.mysql.types.DATETIME,
                 'nullable': False,
             },
 
@@ -113,7 +112,7 @@ class TestMySQL(object):
             'id': {
                 'primary_key': True,
                 'unique': True,
-                'type': sa.sql.sqltypes.CHAR,
+                'type': sa.dialects.mysql.types.CHAR,
                 'nullable': False,
             },
             'price': {
@@ -125,13 +124,13 @@ class TestMySQL(object):
             'title': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.VARCHAR,
+                'type': sa.dialects.mysql.types.VARCHAR,
                 'nullable': False,
             },
             'description': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.Text,
+                'type': sa.dialects.mysql.types.LONGTEXT,
                 'nullable': True,
             },
             'author_id': {
@@ -161,7 +160,7 @@ class TestMySQL(object):
             'book_id': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.CHAR,
+                'type': sa.dialects.mysql.types.CHAR,
                 'nullable': False,
             },
             'category_id': {
@@ -185,25 +184,25 @@ class TestMySQL(object):
             'book_id': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.CHAR,
+                'type': sa.dialects.mysql.types.CHAR,
                 'nullable': False,
             },
             'sold': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.DateTime,
+                'type': sa.dialects.mysql.types.DATETIME,
                 'nullable': False,
             },
             'reservation': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.BIGINT,
+                'type': sa.dialects.mysql.types.BIGINT,
                 'nullable': True,
             },
             'source': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.CHAR,
+                'type': sa.dialects.mysql.types.CHAR,
                 'nullable': True,
             },
 

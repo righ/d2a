@@ -32,25 +32,25 @@ class TestPostgreSQL(object):
             'id': {
                 'primary_key': True,
                 'unique': True,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.postgresql.INTEGER,
                 'nullable': False,
             },
             'category1_id': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.postgresql.INTEGER,
                 'nullable': False,
             },
             'category2_id': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.postgresql.INTEGER,
                 'nullable': False,
             },
             'type': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.VARCHAR,
+                'type': sa.dialects.postgresql.VARCHAR,
                 'nullable': True,
             },
         }
@@ -62,19 +62,19 @@ class TestPostgreSQL(object):
             'id': {
                 'primary_key': True,
                 'unique': True,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.postgresql.INTEGER,
                 'nullable': False,
             },
             'name': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.VARCHAR,
+                'type': sa.dialects.postgresql.VARCHAR,
                 'nullable': False,
             },
             'age': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.SMALLINT,
+                'type': sa.dialects.postgresql.SMALLINT,
                 'nullable': False,
             },
 
@@ -87,19 +87,19 @@ class TestPostgreSQL(object):
             'id': {
                 'primary_key': True,
                 'unique': True,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.postgresql.INTEGER,
                 'nullable': False,
             },
             'name': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.VARCHAR,
+                'type': sa.dialects.postgresql.VARCHAR,
                 'nullable': False,
             },
             'created': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.DateTime,
+                'type': sa.dialects.postgresql.TIMESTAMP,
                 'nullable': False,
             },
 
@@ -124,19 +124,19 @@ class TestPostgreSQL(object):
             'title': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.VARCHAR,
+                'type': sa.dialects.postgresql.VARCHAR,
                 'nullable': False,
             },
             'description': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.Text,
+                'type': sa.dialects.postgresql.TEXT,
                 'nullable': True,
             },
             'author_id': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.postgresql.INTEGER,
                 'nullable': True,
             },
             'content': {
@@ -160,7 +160,7 @@ class TestPostgreSQL(object):
             'id': {
                 'primary_key': True,
                 'unique': True,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.postgresql.INTEGER,
                 'nullable': False,
             },
             'book_id': {
@@ -172,7 +172,7 @@ class TestPostgreSQL(object):
             'category_id': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.INTEGER,
+                'type': sa.dialects.postgresql.INTEGER,
                 'nullable': False,
             },
         }
@@ -184,7 +184,7 @@ class TestPostgreSQL(object):
             'id': {
                 'primary_key': True,
                 'unique': True,
-                'type': sa.sql.sqltypes.BIGINT,
+                'type': sa.dialects.postgresql.BIGINT,
                 'nullable': False,
             },
             'book_id': {
@@ -196,7 +196,7 @@ class TestPostgreSQL(object):
             'sold': {
                 'primary_key': False,
                 'unique': False,
-                'type': sa.sql.sqltypes.DateTime,
+                'type': sa.dialects.postgresql.TIMESTAMP,
                 'nullable': False,
             },
             'reservation': {

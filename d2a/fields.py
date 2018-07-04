@@ -32,7 +32,7 @@ Mapping definition
 
 mapping = {
     models.AutoField: {
-        '_default_type': default_types.INT,
+        '_default_type': default_types.INTEGER,
         '_postgresql_type': postgresql_types.INTEGER,
         '_mysql_type': mysql_types.INTEGER,
         '_oracle_type': oracle_types.NUMBER,
@@ -40,14 +40,14 @@ mapping = {
         'autoincrement': True,
     },
     models.IntegerField: {
-        '_default_type': default_types.INT,
+        '_default_type': default_types.INTEGER,
         '_postgresql_type': postgresql_types.INTEGER,
         '_oracle_type': oracle_types.NUMBER,
         '_mysql_type': mysql_types.INTEGER,
         '_oracle_type_option': {'precision': 11},
     },
     models.PositiveIntegerField: {
-        '_default_type': default_types.INT, 
+        '_default_type': default_types.INTEGER, 
         '_postgresql_type': postgresql_types.INTEGER,
         '_mysql_type': mysql_types.INTEGER,
         '_oracle_type': oracle_types.NUMBER,
@@ -197,7 +197,7 @@ mapping = {
         '_oracle_type_option': {'length': 39},
     },
     models.BinaryField: {
-        '_default_type': default_types.Binary,
+        '_default_type': default_types.BINARY,
         '_postgresql_type': postgresql_types.BYTEA,
         '_mysql_type': mysql_types.LONGBLOB,
         '_oracle_type': oracle_types.BLOB,
@@ -219,38 +219,38 @@ mapping = {
         '_oracle_type_option': {'length': 32},
     },
     models.TextField: {
-        '_default_type': default_types.Text,
+        '_default_type': default_types.TEXT,
         '_postgresql_type': postgresql_types.TEXT,
         '_mysql_type': mysql_types.LONGTEXT,
         '_oracle_type': oracle_types.NCLOB,
     },
     models.DateTimeField: {
-        '_default_type': default_types.DateTime,
+        '_default_type': default_types.DATETIME,
         '_postgresql_type': postgresql_types.TIMESTAMP,
         '_mysql_type': mysql_types.DATETIME,
         '_oracle_type': oracle_types.TIMESTAMP,
     },
     models.DateField: {
-        '_default_type': default_types.Date,
+        '_default_type': default_types.DATE,
         '_postgresql_type': postgresql_types.DATE,
         '_mysql_type': mysql_types.DATE,
         '_oracle_type': oracle_types.DATE,
     },
     models.TimeField: {
-        '_default_type': default_types.Time,
+        '_default_type': default_types.TIME,
         '_postgresql_type': postgresql_types.TIME,
         '_mysql_type': mysql_types.TIME,
         '_oracle_type': oracle_types.TIMESTAMP,
     },
     models.BooleanField: {
-        '_default_type': default_types.Boolean,
+        '_default_type': default_types.BOOLEAN,
         '_postgresql_type': postgresql_types.BOOLEAN,
         '_mysql_type': mysql_types.BOOLEAN,
         '_oracle_type': oracle_types.NUMBER,
         '_oracle_type_option': {'precision': 1},
     },
     models.NullBooleanField: {
-        '_default_type': default_types.Boolean,
+        '_default_type': default_types.BOOLEAN,
         '_postgresql_type': postgresql_types.BOOLEAN,
         '_mysql_type': mysql_types.BOOLEAN,
         '_oracle_type': oracle_types.NUMBER,
@@ -306,7 +306,7 @@ try:
         '_default_type': default_types.VARCHAR,
         '_postgresql_type': postgresql_types.VARCHAR,
         '_mysql_type': mysql_types.VARCHAR,
-        '_mysql_type': oracle_types.VARCHAR2,
+        '_oracle_type': oracle_types.VARCHAR2,
         '_callback': lambda f: {
             '_default_type_option': {'length': f.max_length},
             '_postgresql_type_option': {'length': f.max_length},
@@ -349,11 +349,10 @@ try:
         '_default_type': default_types.JSON,
         '_postgresql_type': postgresql_types.JSON,
         '_mysql_type': mysql_types.JSON,
-        '_default_type': oracle_types.JSON,
+        '_oracle_type': default_types.JSON,
     }
 except AttributeError:
     pass
-
 
 def alias(new_field, existing_field):
     mapping[new_field] = mapping[existing_field]

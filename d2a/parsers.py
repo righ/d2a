@@ -28,6 +28,7 @@ def parse_field(field):
         if hasattr(field, django_attr):
             info[alchemy_attr] = getattr(field, django_attr)
 
+    print('debug', mapping.keys())
     info.update(mapping[field_type])
     while '_callback' in info:
         result = info.pop('_callback')(field)

@@ -22,8 +22,9 @@ AUTO_DETECTED_DB_TYPE = {
     'django.db.backends.postgresql': 'postgresql',
     'django.db.backends.postgresql_psycopg2': 'postgresql',
     'django.db.backends.mysql': 'mysql',
+    'django.db.backends.oracle': 'oracle',
     # 'django.db.backends.sqlite3': 'sqlite3',
-    # 'django.db.backends.oracle': 'oracle',
+
 }.get(settings.DATABASES['default']['ENGINE'])
 
 

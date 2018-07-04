@@ -3,7 +3,7 @@ it converts a django model to a sqlalchemy declaration.
 Requirements
 ============
 - Python: 2.7, 3.6
-- Django: 1.9 ~ 2.0
+- Django: 1.11 ~ 2.0
 - SQLAlchemy: 0.9 ~ 1.2
 
 Installation
@@ -34,7 +34,7 @@ Example: you make `models_sqla.py` at the same directory which `models.py` has b
     - `project_postgresql/sales/models_sqla.py <https://github.com/righ/d2a/blob/master/project_postgresql/sales/models_sqla.py>`_
     - You can omit specifying `db_type`, then it automatically detect database type from ``settings.DATABASES['default']``.
 
-      - Allowed `db_type` is now `postgresql` and `mysql`,
+      - Allowed `db_type` is now `postgresql`, `mysql` and `oracle`,
         the other types will be converted to the following types as ``default`` type: 
         `sqlalchemy/types.py <https://github.com/zzzeek/sqlalchemy/blob/master/lib/sqlalchemy/types.py>`_
 
