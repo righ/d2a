@@ -44,6 +44,7 @@ Example: you make `models_sqla.py` at the same directory which `models.py` has b
 That's all, you can import sqlalchemy declaration made from django model.
 
 .. code:: python
+
   >>> from books import models
   >>> models.  # tab completion
   models.ArrayField(        models.Book(              models.CategoryRelation(  models.models
