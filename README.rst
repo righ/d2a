@@ -1,4 +1,11 @@
-it converts a django model to a sqlalchemy declaration.
+.. image:: https://circleci.com/gh/righ/d2a.svg?style=svg
+    :target: https://circleci.com/gh/righ/d2a
+
+.. image:: https://coveralls.io/repos/github/righ/d2a/badge.svg?branch=master
+:target: https://coveralls.io/github/righ/d2a?branch=master
+
+
+It converts django models to a sqlalchemy orm/expression objects.
 
 Requirements
 ============
@@ -40,51 +47,85 @@ Example: you make `models_sqla.py` at the same directory which `models.py` has b
 
 - That's all, you can import sqlalchemy declaration made from django model.
 
-
   .. code:: python
 
-    >>> from demo import models
+    >>> from books import models
+
     >>> models.  # tab completion
-    models.Author(            models.Category(          models.Sales(             models.uuid
-    models.Book(              models.CategoryRelation(  models.models
+    models.ArrayField(        models.Book(              models.CategoryRelation(  models.models
+    models.Author(            models.Category(          models.JSONField(         models.uuid
 
     >>> models.Book
-    <class 'demo.models.Book'>
-    >>> models.Book.  # tab completion
-    models.Book.DoesNotExist(             models.Book.delete(                   models.Book.price
-    models.Book.MultipleObjectsReturned(  models.Book.description               models.Book.refresh_from_db(
-    models.Book.add_to_class(             models.Book.from_db(                  models.Book.sales
-    models.Book.author                    models.Book.full_clean(               models.Book.save(
-    models.Book.author_id                 models.Book.get_deferred_fields(      models.Book.save_base(
-    models.Book.category                  models.Book.id                        models.Book.serializable_value(
+    <class 'books.models.Book'>
+
+    >>> models.Book.
+    models.Book.DoesNotExist(             models.Book.delete(                   models.Book.refresh_from_db(
+    models.Book.MultipleObjectsReturned(  models.Book.description               models.Book.sales
+    models.Book.add_to_class(             models.Book.from_db(                  models.Book.save(
+    models.Book.author                    models.Book.full_clean(               models.Book.save_base(
+    models.Book.author_id                 models.Book.get_deferred_fields(      models.Book.serializable_value(
+    models.Book.category                  models.Book.id                        models.Book.tags
     models.Book.check(                    models.Book.mro(                      models.Book.title
     models.Book.clean(                    models.Book.objects                   models.Book.unique_error_message(
     models.Book.clean_fields(             models.Book.pk                        models.Book.validate_unique(
+    models.Book.content                   models.Book.prepare_database_save(
+    models.Book.date_error_message(       models.Book.price
 
-    >>> from demo import models_sqla
+    >>> from books import models_sqla
     >>> models_sqla.  # tab completion
-    models_sqla.Author(            models_sqla.BookCategory(      models_sqla.CategoryRelation(  models_sqla.models
-    models_sqla.Book(              models_sqla.Category(          models_sqla.Sales(             models_sqla.transfer(   models_sqla.Book(              models_sqla.CategoryRelation(  models_sqla.models
-
-    >>> models_sqla.Book
-    <class 'd2a.alchemy.book'>
-    >>> models_sqla.Book.  # tab completion
-    models_sqla.Book.author_id    models_sqla.Book.description  models_sqla.Book.metadata     models_sqla.Book.price
-    models_sqla.Book.category     models_sqla.Book.id           models_sqla.Book.mro(         models_sqla.Book.title
+    models_sqla.Author(            models_sqla.BookCategory(      models_sqla.CategoryRelation(  models_sqla.transfer(
+    models_sqla.Book(              models_sqla.Category(          models_sqla.models
     
+    >>> models_sqla.Book
+    <class 'd2a.book'>
+    
+    >>> models_sqla.Book.  # tab completion
+    models_sqla.Book.author       models_sqla.Book.content      models_sqla.Book.metadata     models_sqla.Book.tags
+    models_sqla.Book.author_id    models_sqla.Book.description  models_sqla.Book.mro(         models_sqla.Book.title
+    models_sqla.Book.category     models_sqla.Book.id           models_sqla.Book.price
+
+    # SQL Expression schema
+    >>> models_sqla.Book.__table__
+    Table(
+      'book', MetaData(bind=None), 
+      Column('id', UUID(), table=<book>, primary_key=True, nullable=False, default=ColumnDefault(<function uuid4 at 0x7f3cebe7e598>)), 
+      Column('price', JSON(astext_type=Text()), table=<book>, nullable=False, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebe7ebf8>)), 
+      Column('title', VARCHAR(length=255), table=<book>, nullable=False, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebe7ec80>)), 
+      Column('description', TEXT(), table=<book>, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebe7ed08>)), 
+      Column('author_id', INTEGER(), ForeignKey('author.id'), table=<book>, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebe7ed90>)), 
+      Column('content', BYTEA(), table=<book>, nullable=False, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebe7ee18>)), 
+      Column('tags', ARRAY(VARCHAR()), table=<book>, nullable=False, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebe7eea0>)), 
+      schema=None
+    )
+
+Also, it can extract model declared implicitly depending on m2m field. (in this case, `BookCategory`)
+
 single
 ------
-You should write like the following:
+If you just want to convert one model, you should use `declare` function:
 
   .. code:: python
 
     >>> from d2a import declare
-    >>> from demo.models import Sales
+    >>> from sales.models import Sales
     >>> sales = declare(Sales)
     >>> sales
-    <class 'd2a.alchemy.sales'>
+    <class 'd2a.sales'>
+    
     >>> sales.__table__
-    Table('sales', MetaData(bind=None), Column('id', BIGINT(), table=<sales>, primary_key=True, nullable=False), Column('book_id', CHAR(length=32), ForeignKey('book.id'), table=<sales>), Column('sold', DateTime(), table=<sales>), schema=None)
+    Table(
+      'sales', MetaData(bind=None), 
+      Column('id', BIGINT(), table=<sales>, primary_key=True, nullable=False, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebdebf28>)), 
+      Column('book_id', UUID(), ForeignKey('book.id'), table=<sales>, nullable=False, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebdebea0>)), 
+      Column('sold', TIMESTAMP(), table=<sales>, nullable=False, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebdeb730>)), 
+      Column('reservation', INTERVAL(), table=<sales>, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebdeb6a8>)), 
+      Column('source', INET(), table=<sales>, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebdeb620>)), 
+      schema=None
+    )
+    
+    >>> sales.
+    sales.book         sales.id           sales.mro(         sales.sold
+    sales.book_id      sales.metadata     sales.reservation  sales.source
 
 Custom fields
 -------------
