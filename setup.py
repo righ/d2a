@@ -20,7 +20,7 @@ keywords = [
 
 setup(
     name='d2a',
-    version='0.0.7',
+    version='1.0.0',
     description='it converts django models to sqlalchemy declarations',
     long_description=open('./README.rst', 'r').read(),
     classifiers=classifiers,

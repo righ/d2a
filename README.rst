@@ -180,31 +180,32 @@ Links
 
 History
 =======
-:0.0.1: first release (2017-12-27)
-:0.0.2:
+:1.0.0 (2018-07-05):
 
-  - it supported m2m field.
-  - it limited django version less than `1.9`.
-
-:0.0.3:
-
-  - it got easy to declare custom field.
-  - transfer method can define secondary table.
-
-:0.0.4:
-
-  - fixed bugs.
-
-:0.0.5:
-
-  - added alias method.
+  - Fixed bugs.
+  - Added unit tests.
 
 :0.0.6:
 
   - Fixed a bug that abstract models become the targets.
   - Deleted `install_requires`.
 
-:0.0.7:
+:0.0.5:
 
-  - Fixed a bug
-  - Added unit tests.
+  - added alias method.
+
+:0.0.4:
+
+  - fixed bugs.
+
+:0.0.3:
+
+  - it got easy to declare custom field.
+  - transfer method can define secondary table.
+
+:0.0.2:
+
+  - it supported m2m field.
+  - it limited django version less than `1.9`.
+
+:0.0.1: first release (2017-12-27)
