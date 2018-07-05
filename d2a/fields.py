@@ -1,11 +1,12 @@
 # coding: utf-8
 from django.db import models
 from django.contrib.postgres import fields as postgres_fields
-
 from sqlalchemy import types as default_types
-from sqlalchemy.dialects import postgresql as postgresql_types
-from sqlalchemy.dialects import mysql as mysql_types
-from sqlalchemy.dialects import oracle as oracle_types
+from sqlalchemy.dialects import (
+    postgresql as postgresql_types,
+    mysql as mysql_types,
+    oracle as oracle_types,
+)
 
 from .compat import M2MField
 
@@ -355,4 +356,9 @@ except AttributeError:
     pass
 
 def alias(new_field, existing_field):
+    """It defines a new converting rule same with existing one.
+
+    :param django.db.models.fields.Field new_field: A field which you want to add.
+    :param django.db.models.fields.Field existing_field: A field copied from.
+    """
     mapping[new_field] = mapping[existing_field]
