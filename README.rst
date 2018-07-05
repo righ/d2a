@@ -98,6 +98,7 @@ single
 If you just want to convert one model, you should use `declare` function
 
 .. code:: python
+
   >>> from d2a import declare
   >>> from sales.models import Sales
   >>> sales = declare(Sales)
