@@ -13,11 +13,6 @@ from .utils import get_camelcase
 from .fields import alias
 
 DB_TYPES = ['postgresql', 'mysql', 'oracle', 'sqlite3', 'firebird', 'mssql', 'default']
-
-Base = declarative_base()
-existing = {}
-
-
 AUTO_DETECTED_DB_TYPE = {
     'django.db.backends.postgresql': 'postgresql',
     'django.db.backends.postgresql_psycopg2': 'postgresql',
@@ -27,12 +22,24 @@ AUTO_DETECTED_DB_TYPE = {
 
 }.get(settings.DATABASES['default']['ENGINE'])
 
+Base = declarative_base()
+existing = {}
+
 
 def _extract_kwargs(kwargs):
     return {k: v for k, v in kwargs.items() if not k.startswith('_')}
 
 
-def declare(django_model, db_type=AUTO_DETECTED_DB_TYPE, back_type=None):
+def declare(django_model, db_type=AUTO_DETECTED_DB_TYPE, back_type='backref'):
+    """It converts a django model to alchemy orm object.
+
+    :param django.db.models.base.Model django_model: Django model object or equivalent object.
+    :param str db_type: Database type, for example `postgresql`. If omitted this option, it will be detected from django settings.
+    :param str back_type: Back relation type, `backref` or ``None`` (it does not support `back_populates`).
+
+    This function is also called from `transfer` :)
+    """
+
     model_info = parse_model(django_model)
     if django_model in existing:
         return existing[django_model]
@@ -79,11 +86,21 @@ def declare(django_model, db_type=AUTO_DETECTED_DB_TYPE, back_type=None):
     return cls
 
 
-def transfer(models, exports, db_type=AUTO_DETECTED_DB_TYPE, back_type=None, as_table=False, name_formatter=get_camelcase):
+def transfer(models, exports, db_type=AUTO_DETECTED_DB_TYPE, back_type='backref', as_table=False, name_formatter=get_camelcase):
+    """It makes sqlalchemy model objects from django models.
+
+    :param module models: Django `models.py` or equivalent object.
+    :param dict exports: Namespace which you want to put the models into. In most case, that is ``globals()``.
+    :param str db_type: Database type, for example `postgresql`. If omitted this option, it will be detected from django settings.
+    :param str back_type: Back relation type, `backref` or ``None`` (it does not support `back_populates`).
+    :param bool as_table: Whether outputting as `SQL Expression` schema (``orm.__table__``) or not.
+    :param function name_formatter: It receives an argument (model name) as ``str``, and returns formetted model name.
+    """
+
     for model in parse_models(models).values():
         declare(model, db_type=db_type, back_type=back_type)
 
     for django_model, alchemy_model in existing.items():
         if models.__name__ == django_model.__module__:
-            exports[name_formatter(django_model._meta.object_name)] = alchemy_model.__table__ if as_table else alchemy_model
-
+            key = name_formatter(django_model._meta.object_name)
+            exports[key] = alchemy_model.__table__ if as_table else alchemy_model
