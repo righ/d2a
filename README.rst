@@ -1,7 +1,7 @@
 .. image:: https://circleci.com/gh/righ/d2a.svg?style=svg
   :target: https://circleci.com/gh/righ/d2a
 
-It converts django models to a sqlalchemy orm/expression objects.
+It converts django models to sqlalchemy orm/expression objects.
 
 Requirements
 ============
