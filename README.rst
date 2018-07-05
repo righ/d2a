@@ -1,8 +1,8 @@
 .. image:: https://circleci.com/gh/righ/d2a.svg?style=svg
-    :target: https://circleci.com/gh/righ/d2a
+  :target: https://circleci.com/gh/righ/d2a
 
 .. image:: https://coveralls.io/repos/github/righ/d2a/badge.svg?branch=master
-:target: https://coveralls.io/github/righ/d2a?branch=master
+  :target: https://coveralls.io/github/righ/d2a?branch=master
 
 
 It converts django models to a sqlalchemy orm/expression objects.
@@ -174,7 +174,12 @@ execute
 .. code-block:: python
 
   >>> from books import models_sqla
-  >>> # and do something
+  >>> book = models_sqla.Book()
+  >>> author = models_sqla.Author()
+  >>> book.author = author
+  >>> author.books
+  [<d2a.book object at 0x7f3cec539358>]
+  # And do something you want do ;)
 
 Links
 =====
