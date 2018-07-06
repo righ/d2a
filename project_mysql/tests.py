@@ -3,16 +3,21 @@ import sqlalchemy as sa
 
 
 def info(table):
-    i = {
-        key: {
+    result = {}
+    for key, col in table.c.items():
+        result[key] = {
             'primary_key': col.primary_key,
             'unique': col.unique,
             'type': type(col.type),
             'nullable': col.nullable,
         }
-        for key, col in table.c.items()
-    }
-    return i
+        if col.default:
+            default = col.default.arg
+            if callable(default):
+                # because it can't check function's equality.
+                default = default.__name__
+            result[key]['default'] = default
+    return result
 
 
 class TestMySQL(object):
@@ -77,7 +82,6 @@ class TestMySQL(object):
                 'type': sa.dialects.mysql.types.SMALLINT,
                 'nullable': False,
             },
-
         }
         assert actual == expected
 
@@ -102,7 +106,6 @@ class TestMySQL(object):
                 'type': sa.dialects.mysql.types.DATETIME,
                 'nullable': False,
             },
-
         }
         assert actual == expected
 
@@ -114,12 +117,14 @@ class TestMySQL(object):
                 'unique': True,
                 'type': sa.dialects.mysql.types.CHAR,
                 'nullable': False,
+                'default': 'uuid4',
             },
             'price': {
                 'primary_key': False,
                 'unique': False,
                 'type': sa.dialects.mysql.types.INTEGER,
                 'nullable': False,
+                'default': 100,
             },
             'title': {
                 'primary_key': False,

@@ -3,16 +3,21 @@ import sqlalchemy as sa
 
 
 def info(table):
-    i = {
-        key: {
+    result = {}
+    for key, col in table.c.items():
+        result[key] = {
             'primary_key': col.primary_key,
             'unique': col.unique,
             'type': type(col.type),
             'nullable': col.nullable,
         }
-        for key, col in table.c.items()
-    }
-    return i
+        if col.default:
+            default = col.default.arg
+            if callable(default):
+                # because it can't check function's equality.
+                default = default.__name__
+            result[key]['default'] = default
+    return result
 
 
 class TestPostgreSQL(object):
@@ -102,7 +107,6 @@ class TestPostgreSQL(object):
                 'type': sa.dialects.postgresql.TIMESTAMP,
                 'nullable': False,
             },
-
         }
         assert actual == expected
 
@@ -114,6 +118,7 @@ class TestPostgreSQL(object):
                 'unique': True,
                 'type': sa.dialects.postgresql.UUID,
                 'nullable': False,
+                'default': 'uuid4',
             },
             'price': {
                 'primary_key': False,
@@ -211,6 +216,5 @@ class TestPostgreSQL(object):
                 'type': sa.dialects.postgresql.INET,
                 'nullable': True,
             },
-
         }
         assert actual == expected

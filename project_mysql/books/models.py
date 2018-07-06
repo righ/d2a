@@ -32,7 +32,7 @@ class Category(models.Model):
 
 class Book(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    price = models.IntegerField()
+    price = models.IntegerField(default=100)
     title = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     author = models.ForeignKey(Author, null=True, on_delete=models.SET_NULL, related_name='books')

@@ -2,6 +2,7 @@
 from collections import OrderedDict
 
 from django.db.models.base import ModelBase
+from django.db.models.fields import NOT_PROVIDED
 from django.db import models
 
 from .fields import mapping
@@ -23,10 +24,12 @@ def parse_field(field):
         ('primary_key', 'primary_key'), 
         ('unique', 'unique'), 
         ('null', 'nullable'),
-        ('default', 'default')
     ]:
         if hasattr(field, django_attr):
             info[alchemy_attr] = getattr(field, django_attr)
+
+        if getattr(field, 'default', NOT_PROVIDED) is not NOT_PROVIDED:
+            info['default'] = field.default
 
     info.update(mapping[field_type])
     while '_callback' in info:

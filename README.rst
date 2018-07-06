@@ -180,8 +180,14 @@ Links
 
 History
 =======
-:1.0.0 (2018-07-05):
+:1.0.1:
 
+  - (2018-07-06)
+  - Fixed a bug, that it will be provided `None` even though it does not be specified `default` argument.
+
+:1.0.0:
+
+  - (2018-07-05)
   - Fixed bugs.
   - Added unit tests.
 

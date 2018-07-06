@@ -16,12 +16,14 @@ keywords = [
     'mapping',
     'decralation',
     'table',
+    'expression',
+    'orm',
 ]
 
 setup(
     name='d2a',
-    version='1.0.0',
-    description='it converts django models to sqlalchemy declarations',
+    version='1.0.1',
+    description='It converts django models to a sqlalchemy orm/expression objects.',
     long_description=open('./README.rst', 'r').read(),
     classifiers=classifiers,
     keywords=', '.join(keywords),
