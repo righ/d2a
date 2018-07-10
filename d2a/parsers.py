@@ -28,8 +28,8 @@ def parse_field(field):
         if hasattr(field, django_attr):
             info[alchemy_attr] = getattr(field, django_attr)
 
-        if getattr(field, 'default', NOT_PROVIDED) is not NOT_PROVIDED:
-            info['default'] = field.default
+    if getattr(field, 'default', NOT_PROVIDED) is not NOT_PROVIDED:
+        info['default'] = field.default
 
     info.update(mapping[field_type])
     while '_callback' in info:
@@ -57,4 +57,3 @@ def parse_models(module):
         if isinstance(model, ModelBase) and not model._meta.abstract:
             models[name] = model
     return models
-

@@ -1,8 +1,6 @@
 .. image:: https://circleci.com/gh/righ/d2a.svg?style=svg
   :target: https://circleci.com/gh/righ/d2a
 
-It converts django models to sqlalchemy orm/expression objects.
-
 Requirements
 ============
 - Python: 2.7, 3.3, 3.4, 3.5, 3.6 (Tested with 2.7, 3.6)
@@ -45,26 +43,6 @@ That's all, you can import sqlalchemy declaration made from django model.
 
 .. code:: python
 
-  >>> from books import models
-  >>> models.  # tab completion
-  models.ArrayField(        models.Book(              models.CategoryRelation(  models.models
-  models.Author(            models.Category(          models.JSONField(         models.uuid
-
-  >>> models.Book
-  <class 'books.models.Book'>
-
-  >>> models.Book.
-  models.Book.DoesNotExist(             models.Book.delete(                   models.Book.refresh_from_db(
-  models.Book.MultipleObjectsReturned(  models.Book.description               models.Book.sales
-  models.Book.add_to_class(             models.Book.from_db(                  models.Book.save(
-  models.Book.author                    models.Book.full_clean(               models.Book.save_base(
-  models.Book.author_id                 models.Book.get_deferred_fields(      models.Book.serializable_value(
-  models.Book.category                  models.Book.id                        models.Book.tags
-  models.Book.check(                    models.Book.mro(                      models.Book.title
-  models.Book.clean(                    models.Book.objects                   models.Book.unique_error_message(
-  models.Book.clean_fields(             models.Book.pk                        models.Book.validate_unique(
-  models.Book.content                   models.Book.prepare_database_save(
-  models.Book.date_error_message(       models.Book.price
   >>> from books import models_sqla
   >>> models_sqla.  # tab completion
   models_sqla.Author(            models_sqla.BookCategory(      models_sqla.CategoryRelation(  models_sqla.transfer(
@@ -82,12 +60,12 @@ That's all, you can import sqlalchemy declaration made from django model.
   Table(
     'book', MetaData(bind=None), 
     Column('id', UUID(), table=<book>, primary_key=True, nullable=False, default=ColumnDefault(<function uuid4 at 0x7f3cebe7e598>)), 
-    Column('price', JSON(astext_type=Text()), table=<book>, nullable=False, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebe7ebf8>)), 
-    Column('title', VARCHAR(length=255), table=<book>, nullable=False, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebe7ec80>)), 
-    Column('description', TEXT(), table=<book>, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebe7ed08>)), 
-    Column('author_id', INTEGER(), ForeignKey('author.id'), table=<book>, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebe7ed90>)), 
-    Column('content', BYTEA(), table=<book>, nullable=False, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebe7ee18>)), 
-    Column('tags', ARRAY(VARCHAR()), table=<book>, nullable=False, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebe7eea0>)), 
+    Column('price', JSON(astext_type=Text()), table=<book>, nullable=False), 
+    Column('title', VARCHAR(length=255), table=<book>, nullable=False), 
+    Column('description', TEXT(), table=<book>),
+    Column('author_id', INTEGER(), ForeignKey('author.id'), table=<book>), 
+    Column('content', BYTEA(), table=<book>, nullable=False), 
+    Column('tags', ARRAY(VARCHAR()), table=<book>, nullable=False), 
     schema=None
   )
 
@@ -95,7 +73,7 @@ Also, it can extract model declared implicitly depending on m2m field. (in this 
 
 single
 ------
-If you just want to convert one model, you should use `declare` function
+If you just want to convert one model, you should use `declare` function.
 
 .. code:: python
 
@@ -108,11 +86,11 @@ If you just want to convert one model, you should use `declare` function
   >>> sales.__table__
   Table(
     'sales', MetaData(bind=None), 
-    Column('id', BIGINT(), table=<sales>, primary_key=True, nullable=False, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebdebf28>)), 
-    Column('book_id', UUID(), ForeignKey('book.id'), table=<sales>, nullable=False, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebdebea0>)), 
-    Column('sold', TIMESTAMP(), table=<sales>, nullable=False, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebdeb730>)), 
-    Column('reservation', INTERVAL(), table=<sales>, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebdeb6a8>)), 
-    Column('source', INET(), table=<sales>, default=ColumnDefault(<function NOT_PROVIDED at 0x7f3cebdeb620>)), 
+    Column('id', BIGINT(), table=<sales>, primary_key=True, nullable=False), 
+    Column('book_id', UUID(), ForeignKey('book.id'), table=<sales>, nullable=False), 
+    Column('sold', TIMESTAMP(), table=<sales>, nullable=False), 
+    Column('reservation', INTERVAL(), table=<sales>), 
+    Column('source', INET(), table=<sales>), 
     schema=None
   )
   
@@ -176,10 +154,16 @@ execute
 
 Links
 =====
-- https://github.com/righ/d2a
+- https://github.com/righ/d2a/
+- https://pypi.org/project/d2a/
 
 History
 =======
+:1.0.2:
+  
+  - (2018-07-10)
+  - Improved a little.
+
 :1.0.1:
 
   - (2018-07-06)
