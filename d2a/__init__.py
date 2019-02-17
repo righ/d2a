@@ -1,16 +1,18 @@
 # coding: utf-8
+import importlib
+import types
+import sys
 from collections import OrderedDict
 
 from django.conf import settings
 
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import relationship
 
 from .parsers import parse_models, parse_model
 from .utils import get_camelcase
-from .fields import alias
+from .fields import alias, alias_dict
 
 DB_TYPES = ['postgresql', 'mysql', 'oracle', 'sqlite3', 'firebird', 'mssql', 'default']
 AUTO_DETECTED_DB_TYPE = {
@@ -19,8 +21,10 @@ AUTO_DETECTED_DB_TYPE = {
     'django.db.backends.mysql': 'mysql',
     'django.db.backends.oracle': 'oracle',
     # 'django.db.backends.sqlite3': 'sqlite3',
-
 }.get(settings.DATABASES['default']['ENGINE'])
+
+D2A_CONFIG = getattr(settings, 'D2A_CONFIG', {})
+alias_dict(D2A_CONFIG.get('ALIASES', {}))
 
 Base = declarative_base()
 existing = {}
@@ -104,3 +108,23 @@ def transfer(models, exports, db_type=AUTO_DETECTED_DB_TYPE, back_type='backref'
         if models.__name__ == django_model.__module__:
             key = name_formatter(django_model._meta.object_name)
             exports[key] = alchemy_model.__table__ if as_table else alchemy_model
+
+
+def autoload(config=D2A_CONFIG.get('AUTOLOAD', {})):
+    """It loads all models automatically.
+    """
+    module = config.get('module', 'models_sqla')
+    option = config.get('option', {})
+    for app in settings.INSTALLED_APPS:
+        d = '{app}.models'.format(app=app)
+        a = '{app}.{module}'.format(app=app, module=module)
+        if importlib.util.find_spec(d) is None:
+            continue
+        try:
+            importlib.import_module(a)
+        except ImportError:
+            sys.modules[a] = types.ModuleType(a)
+            transfer(importlib.import_module(d), sys.modules[a].__dict__, **option)
+
+
+default_app_config = "d2a.apps.D2aConfig"

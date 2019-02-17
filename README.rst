@@ -3,9 +3,17 @@
 
 Requirements
 ============
-- Python: 2.7, 3.3, 3.4, 3.5, 3.6 (Tested with 2.7, 3.6)
-- Django: 1.9 ~ 2.0 (Tested with 1.11, 2.0)
-- SQLAlchemy: 0.9 ~ 1.2 (Tested with 1.2)
+- Python: 2.7.15 or later, 3.4 or later.
+
+  - Tested with 2.7.15, 3.6
+
+- Django: 1.9 or later.
+  
+  - Tested with 1.11, 2.0, 2.1
+
+- SQLAlchemy: 0.9 or later.
+
+  - Tested with 1.2
 
 Installation
 ============
@@ -17,29 +25,11 @@ Installation
 Usage
 =====
 
-altogether
-----------
-Example: you make `models_sqla.py` at the same directory which `models.py` has been placed on.
+Auto loading
+------------
+Just add `d2a` to ``settings.INSTALLED_APPS``.
 
-- And write like the following to the `models_sqla.py`
-
-  .. code:: python
-
-     from d2a import transfer
-     from . import models
-     transfer(models, globals())
-
-  - Example:
-    
-    - `project_postgresql/books/models_sqla.py <https://github.com/righ/d2a/blob/master/project_postgresql/books/models_sqla.py>`_
-    - `project_postgresql/sales/models_sqla.py <https://github.com/righ/d2a/blob/master/project_postgresql/sales/models_sqla.py>`_
-    - You can omit specifying `db_type`, then it automatically detects database type from ``settings.DATABASES['default']``.
-
-      - Allowed `db_type` is now `postgresql`, `mysql` and `oracle`,
-        the other types will be converted to the following types as ``default`` type: 
-        `sqlalchemy/types.py <https://github.com/zzzeek/sqlalchemy/blob/master/lib/sqlalchemy/types.py>`_
-
-That's all, you can import sqlalchemy declaration made from django model.
+Then `models_sqla` (default) in all apps become possible to be imported as a module.
 
 .. code:: python
 
@@ -69,10 +59,58 @@ That's all, you can import sqlalchemy declaration made from django model.
     schema=None
   )
 
-Also, it can extract model declared implicitly depending on m2m field. (in this case, `BookCategory`)
+Also, it can extract model declared implicitly depending on m2m field.
+(in this case, `BookCategory`)
 
-single
-------
+.. note:
+
+  You can set the config to the settings.
+
+  .. code-block:: python
+
+    # This can be omitted.
+    D2A_CONFIG = {
+        'AUTOLOAD': { # optional
+            # module name: It can be used different module name from `modelsa`.
+            'module': 'modelsa',  # optional, default: 'models_sqla'
+            'option': {  # optional
+                'db_type': 'postgresql',  # default: 'default'
+                'back_type': 'backref',  # default: 'backref'
+                'as_table': True,  # default: False
+                'name_formatter': str.upper,  # default: get_camelcase
+            }
+        }
+    }
+
+
+Per models module
+-----------------
+If you want to create a module manually, create a `models_sqla.py` in the apps.
+
+Write like the following to it`:
+
+.. code:: python
+
+   from d2a import transfer
+   from . import models
+   transfer(models, globals())
+
+`models_sqla.py` exists, auto module creation will be omitted.
+
+And if you create every `models_sqla.py` manually,
+it is unnecessary to set `d2a` to ``settings.INSTALLED_APPS``.
+
+Example:
+
+- `project_postgresql/books/models_sqla.py <https://github.com/righ/d2a/blob/master/project_postgresql/books/models_sqla.py>`_
+- You can omit specifying `db_type`, then it automatically detects a database type from ``settings.DATABASES['default']``.
+
+  - Now `postgresql`, `mysql` and `oracle` are allowed,
+    the other types will be converted to the following types as ``default`` type: 
+    `sqlalchemy/types.py <https://github.com/zzzeek/sqlalchemy/blob/master/lib/sqlalchemy/types.py>`_
+
+Per model
+---------
 If you just want to convert one model, you should use `declare` function.
 
 .. code:: python
@@ -100,7 +138,8 @@ If you just want to convert one model, you should use `declare` function.
 
 Custom fields
 -------------
-If you are using customized field which is not built-in, you can register the field as the other field using `alias` method.
+If you are using customized field not built-in,
+you can register the field as the other field using `alias` or `alias_dict` method.
 
 .. code:: python
 
@@ -111,6 +150,11 @@ If you are using customized field which is not built-in, you can register the fi
   
   from d2a import alias
   alias(ExtendedImageField, ImageField)
+
+  # or
+  alias_dict({
+    ExtendedImageField: ImageField,
+  })
 
 Demo
 ============
@@ -159,6 +203,11 @@ Links
 
 History
 =======
+:1.1.0:
+
+  - (2019-02-17)
+  - Added a function to load all models automatically.
+
 :1.0.2:
   
   - (2018-07-10)
@@ -167,7 +216,7 @@ History
 :1.0.1:
 
   - (2018-07-06)
-  - Fixed a bug, that it will be provided `None` even though it does not be specified `default` argument.
+  - Fixed a bug, that it will be provided `None` even though it's not specified `default` argument.
 
 :1.0.0:
 

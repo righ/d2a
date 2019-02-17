@@ -40,6 +40,9 @@ INSTALLED_APPS = [
 
     'books',
     'sales',
+
+    # auto loads models
+    'd2a',
 ]
 
 MIDDLEWARE = [

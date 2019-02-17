@@ -362,3 +362,8 @@ def alias(new_field, existing_field):
     :param django.db.models.fields.Field existing_field: A field copied from.
     """
     mapping[new_field] = mapping[existing_field]
+
+
+def alias_dict(mapping={}):
+    for new_field, existing_field in mapping.items():
+        alias(new_field, existing_field)

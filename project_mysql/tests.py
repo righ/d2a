@@ -23,13 +23,13 @@ def info(table):
 class TestMySQL(object):
     @pytest.fixture
     def books(self):
-        from books import models_sqla
-        return models_sqla
+        from books import modelsa
+        return modelsa
 
     @pytest.fixture
     def sales(self):
-        from sales import models_sqla
-        return models_sqla
+        from sales import modelsa
+        return modelsa
 
     def test_CategoryRelation(self, books):
         actual = info(books.CategoryRelation.__table__)

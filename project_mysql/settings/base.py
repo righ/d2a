@@ -44,6 +44,9 @@ INSTALLED_APPS = [
 
     'books',
     'sales',
+
+    # auto loads models
+    'd2a',
 ]
 
 MIDDLEWARE = [
@@ -131,3 +134,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+
+D2A_CONFIG = {
+    'AUTOLOAD': {
+        'module': 'modelsa',
+    },
+}
