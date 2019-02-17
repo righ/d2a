@@ -1,8 +1,10 @@
 .coverage
+.pypirc
 .tox/*
 .cache/*
 *.egg-info/*
 
+build/*
 dist/*
 __pycache__/*
 venv/*

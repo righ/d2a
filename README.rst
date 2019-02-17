@@ -29,6 +29,24 @@ Auto loading
 ------------
 Just add `d2a` to ``settings.INSTALLED_APPS``.
 
+.. code-block:: python
+
+  INSTALLED_APPS = [
+      'django.contrib.admin',
+      'django.contrib.auth',
+      'django.contrib.contenttypes',
+      'django.contrib.sessions',
+      'django.contrib.messages',
+      'django.contrib.staticfiles',
+  
+      # example apps
+      'books',
+      'sales',
+
+      # auto loads models
+      'd2a',
+  ]
+
 Then `models_sqla` (default) in all apps become possible to be imported as a module.
 
 .. code:: python
