@@ -80,7 +80,7 @@ Then `models_sqla` (default) in all apps become possible to be imported as a mod
 Also, it can extract model declared implicitly depending on m2m field.
 (in this case, `BookCategory`)
 
-.. note:
+.. note::
 
   You can set configrations to ``settings.py``.
 
