@@ -82,22 +82,30 @@ Also, it can extract model declared implicitly depending on m2m field.
 
 .. note:
 
-  You can set the config to the settings.
+  You can set configrations to ``settings.py``.
+
+  Example:
 
   .. code-block:: python
 
-    # This can be omitted.
+    # This variable can be omitted.
     D2A_CONFIG = {
         'AUTOLOAD': { # optional
             # module name: It can be used different module name from `modelsa`.
             'module': 'modelsa',  # optional, default: 'models_sqla'
+            # transfer function's args after 'exports' arg.
             'option': {  # optional
                 'db_type': 'postgresql',  # default: 'default'
                 'back_type': 'backref',  # default: 'backref'
                 'as_table': True,  # default: False
                 'name_formatter': str.upper,  # default: get_camelcase
             }
-        }
+        },
+        # converting rules for customized fields
+        'ALIASES': {  # optional
+            # Evaluates ExtendedImageField as ImageField
+            ExtendedImageField: models.ImageField,
+        },
     }
 
 
