@@ -91,7 +91,7 @@ Also, it can extract model declared implicitly depending on m2m field.
     # This variable can be omitted.
     D2A_CONFIG = {
         'AUTOLOAD': { # optional
-            # module name: It can be used different module name from `modelsa`.
+            # module name: It can be used different module name from `models_sqla`.
             'module': 'modelsa',  # optional, default: 'models_sqla'
             # transfer function's args after 'exports' arg.
             'option': {  # optional
@@ -229,7 +229,7 @@ Links
 
 History
 =======
-:1.1.0:
+:1.1.x:
 
   - (2019-02-17)
   - Added a function to load all models automatically.
