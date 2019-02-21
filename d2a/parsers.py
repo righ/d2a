@@ -46,7 +46,13 @@ def parse_model(model, callback=parse_field):
         info['fields'][field.attname] = callback(field)
 
     for name, field in get_m2m_fields(model).items():
-        info['fields'][name] = callback(field)
+        try:
+            info['fields'][name] = callback(field)
+        except AttributeError as e:
+            # it raises an attribute exception when AUTH_USER_MODEL is changed.
+            from django.contrib.auth import get_user_model, models as auth_models
+            if get_user_model() is auth_models.User:
+                raise e
 
     return info
 
