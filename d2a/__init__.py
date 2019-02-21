@@ -116,6 +116,7 @@ def autoload(config=D2A_CONFIG.get('AUTOLOAD', {})):
     module = config.get('module', 'models_sqla')
     option = config.get('option', {})
     for app in settings.INSTALLED_APPS:
+        app = app.split('.')[0]
         d = '{app}.models'.format(app=app)
         a = '{app}.{module}'.format(app=app, module=module)
         if importlib.util.find_spec(d) is None:
