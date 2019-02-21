@@ -39,13 +39,18 @@ Just add `d2a` to ``settings.INSTALLED_APPS``.
       'django.contrib.messages',
       'django.contrib.staticfiles',
   
+      # top or here
+      'd2a',
+
       # example apps
       'books',
       'sales',
-
-      # auto loads models
-      'd2a',
   ]
+
+.. warning::
+
+  Put it before apps you made as much as possible.
+  Because it want to register alchemy model before the other ``apps.py``.
 
 Then `models_sqla` (default) in all apps become possible to be imported as a module.
 
