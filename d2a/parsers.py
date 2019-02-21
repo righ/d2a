@@ -1,5 +1,7 @@
 # coding: utf-8
+import logging
 from collections import OrderedDict
+
 
 from django.db.models.base import ModelBase
 from django.db.models.fields import NOT_PROVIDED
@@ -7,6 +9,8 @@ from django.db import models
 
 from .fields import mapping
 from .compat import M2MField
+
+logger = logging.getLogger(__name__)
 
 
 def get_m2m_fields(model):
@@ -52,7 +56,7 @@ def parse_model(model, callback=parse_field):
             # it raises an attribute exception when AUTH_USER_MODEL is changed.
             from django.contrib.auth import get_user_model, models as auth_models
             if get_user_model() is auth_models.User:
-                raise e
+                logger.warning('An intermediate table (refs %(table_name)) was not created.', info)
 
     return info
 
