@@ -57,7 +57,7 @@ def parse_model(model, callback=parse_field):
             from django.contrib.auth import get_user_model, models as auth_models
             if get_user_model() is auth_models.User:
                 logger.warning('An intermediate table (refs %(table_name)) was not created.', info)
-
+            break
     return info
 
 
