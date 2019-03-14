@@ -11,9 +11,13 @@ services:
     working_dir: /root/
     volumes:
       - ./:/root/
-    command: |
-      bash -c "\
-      bash"
+    command: >
+      /bin/bash -c "
+        python -m venv venv/ || true &&
+        venv/bin/pip install pip setuptools -U &&
+        venv/bin/pip install wheel &&
+        venv/bin/pip install -r demo_requirements.txt &&
+        bash"
     links:
       - postgres:postgres
       - mariadb:mariadb
