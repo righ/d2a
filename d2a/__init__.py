@@ -13,15 +13,14 @@ from sqlalchemy.orm import relationship
 from .parsers import parse_models, parse_model
 from .utils import get_camelcase
 from .fields import alias, alias_dict
+from .db import (
+    AUTO_DETECTED_DB_TYPE,
+    query_expression, execute_expression,
+    make_engine, make_session,
+)
 
 DB_TYPES = ['postgresql', 'mysql', 'oracle', 'sqlite3', 'firebird', 'mssql', 'default']
-AUTO_DETECTED_DB_TYPE = {
-    'django.db.backends.postgresql': 'postgresql',
-    'django.db.backends.postgresql_psycopg2': 'postgresql',
-    'django.db.backends.mysql': 'mysql',
-    'django.db.backends.oracle': 'oracle',
-    # 'django.db.backends.sqlite3': 'sqlite3',
-}.get(settings.DATABASES['default']['ENGINE'])
+
 
 D2A_CONFIG = getattr(settings, 'D2A_CONFIG', {})
 alias_dict(D2A_CONFIG.get('ALIASES', {}))
