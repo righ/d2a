@@ -1,4 +1,5 @@
 # coding: utf-8
+import re
 import logging
 from collections import OrderedDict
 from contextlib import contextmanager
@@ -15,6 +16,39 @@ DIALECTS = {
     for t in ['postgresql', 'mysql', 'oracle', 'mssql', 'sqlite', 'firebase']
     if hasattr(dialects, t)
 }
+
+DIALECT_MAPPING = {}
+key = 'postgresql'
+if key in DIALECTS:
+    # https://github.com/sqlalchemy/sqlalchemy/blob/f572cdf7850b7a2ee6b7535b8129a76fa73496e6/test/sql/test_compiler.py#L2562
+    DIALECT_MAPPING[DIALECTS[key]] = lambda sql, params: (
+        sql,
+        params,
+    )
+
+key = 'mysql'
+if key in DIALECTS:
+    # https://github.com/sqlalchemy/sqlalchemy/blob/f572cdf7850b7a2ee6b7535b8129a76fa73496e6/test/sql/test_compiler.py#L2583
+    DIALECT_MAPPING[DIALECTS[key]] = lambda sql, params: (
+        sql,
+        tuple(params.values()),
+    )
+
+key = 'oracle'
+if key in DIALECTS:
+    # https://github.com/sqlalchemy/sqlalchemy/blob/f572cdf7850b7a2ee6b7535b8129a76fa73496e6/test/sql/test_compiler.py#L2569
+    DIALECT_MAPPING[DIALECTS[key]] = lambda sql, params: (
+        re.sub(r"(?<!:):([A-Za-z][0-9A-Za-z_]+)", r"%(\1)s", sql),
+        params,
+    )
+
+key = 'sqlite'
+if key in DIALECTS:
+    # https://github.com/sqlalchemy/sqlalchemy/blob/f572cdf7850b7a2ee6b7535b8129a76fa73496e6/test/sql/test_compiler.py#L2599
+    DIALECT_MAPPING[DIALECTS[key]] = lambda sql, params: (
+        sql.replace('?', '%s'),
+        tuple(params.values()),
+    )
 
 MS_DSN = 'DRIVER={{SQL Server}}; SERVER={HOST}; DATABASE={NAME}; UID={USER}; PWD={PASSWORD};'
 
@@ -51,8 +85,10 @@ def _complement(conn, dialect, database='default'):
 
 def query_expression(stmt, conn=None, dialect=None, database='default'):
     conn, dialect = _complement(conn, dialect, database)
+    binded = stmt.compile(dialect=dialect())
     with conn.cursor() as cursor:
-        _execute_cursor(cursor, str(stmt), stmt.params)
+        sql, params = DIALECT_MAPPING[dialect](str(binded), binded.params)
+        _execute_cursor(cursor, sql, params)
         return [
             OrderedDict(zip([c.name for c in stmt.c], row))
             for row in cursor
@@ -61,9 +97,10 @@ def query_expression(stmt, conn=None, dialect=None, database='default'):
 
 def execute_expression(stmt, conn=None, dialect=None, database='default'):
     conn, dialect = _complement(conn, dialect, database)
-    stmt = stmt.compile(dialect=dialect())
+    binded = stmt.compile(dialect=dialect())
     with conn.cursor() as cursor:
-        _execute_cursor(cursor, str(stmt), stmt.params)
+        sql, params = DIALECT_MAPPING[dialect](str(binded), binded.params)
+        _execute_cursor(cursor, sql, params)
         return cursor.rowcount
 
 

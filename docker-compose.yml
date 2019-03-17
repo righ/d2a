@@ -39,6 +39,9 @@ services:
     image: mariadb:latest
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: 'd2a'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'user'
       # MYSQL_DATABASE: mysql
     volumes:
       - ./data/mysql/:/var/lib/

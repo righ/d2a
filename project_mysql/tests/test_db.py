@@ -9,7 +9,7 @@ from sqlalchemy import (
 
 @pytest.fixture(scope='function')
 def author_model():
-    from books.models_sqla import Author
+    from books.modelsa import Author
     return Author
 
 
@@ -95,7 +95,7 @@ class Test_execute_expression:
         assert actual == expected
 
 
-@pytest.mark.skip
+
 class Test_make_session:
     def _callFUT(self, **kwargs):
         from d2a.db import make_session

@@ -88,6 +88,15 @@ DATABASES = {
         'HOST': 'postgres',
         'PORT': 5432,
     },
+    'replica': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'postgres_replica',
+        # exactly the same connection parameters
+        'TEST': {
+            'MIRROR': 'default'
+        },
+        'BYPASS_CREATION': True,
+    },
 }
 
 
