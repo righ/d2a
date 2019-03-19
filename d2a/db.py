@@ -83,12 +83,15 @@ def _complement(conn, dialect, database='default'):
     return conn, dialect
 
 
-def query_expression(stmt, conn=None, dialect=None, database='default'):
+def query_expression(stmt, conn=None, dialect=None, database='default',
+                     as_dict=True):
     conn, dialect = _complement(conn, dialect, database)
     binded = stmt.compile(dialect=dialect())
     with conn.cursor() as cursor:
         sql, params = DIALECT_MAPPING[dialect](str(binded), binded.params)
         _execute_cursor(cursor, sql, params)
+        if not as_dict:
+            return list(cursor)
         return [
             OrderedDict(zip([c.name for c in stmt.c], row))
             for row in cursor
@@ -138,11 +141,15 @@ def make_session(engine=None,
     session = Session()
     try:
         yield session
-    finally:
+    except Exception:
+        session.rollback()
+        logger.exception('An error occured during executing queries.')
+    else:
         if not autoflush:
             session.flush()
         if not autocommit:
             session.commit()
+    finally:
         session.close()
 
 

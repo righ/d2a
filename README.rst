@@ -229,6 +229,67 @@ execute
   [<d2a.book object at 0x7f3cec539358>]
   # And do something you want do ;)
 
+Querying shortcut
+------------------
+ORM
+~~~~~~~~~~~~~~~~~~
+There is a function named `make_session` for ORM mode.
+
+.. code-block:: python3
+
+  >>> from d2a import make_session
+  >>> from books.models_sqla import Author
+  >>>
+  >>> with make_session() as session:
+  ...     # it commits and flushes automatically when the scope exits.
+  ...     a = Author()
+  ...     a.name = 'righ'
+  ...     a.age = 30
+  ...     session.add(a)
+  ...
+  >>> with make_session() as session:
+  ...     # it won't register records when some exception raised.
+  ...     a = Author()
+  ...     a.name = 'unknown'
+  ...     a.age = 5
+  ...     session.add(a)
+  ...     raise IndexError()
+  ...
+  An error occured during executing queries.
+  Traceback (most recent call last):
+    File "/root/d2a/db.py", line 140, in make_session
+      yield session
+    File "<console>", line 7, in <module>
+  IndexError
+  >>> with make_session() as session:
+  ...     # it won't register records when the session was rolled back.
+  ...     a = Author()
+  ...     a.name = 'teruhiko'
+  ...     a.age = 85
+  ...     session.add(a)
+  ...     session.rollback()
+  ...
+  >>> with make_session() as session:
+  ...     session.query(Author.name, Author.age).all()
+  ...
+  [('righ', 30)]
+
+It receives the following arguments, all arguments can be omitted.
+
+:engine: engine object or database string (default: None). When it is omitted, it guesses database type and get an engine automatically.
+:autoflush: It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: True)
+:autocommit:  It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: False)
+:expire_on_commit: It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: True)
+:info: It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: None)
+
+Expression
+~~~~~~~~~~~~~~~~~~
+There are two functions.
+
+:query_expression: It is for getting `SELECT` results, it returns list containing record.
+:execute_expression: It is for executing `INSERT`, `DELETE`, `UPDATE` statement, it returns num of records having been affected.
+
+
 Links
 =====
 - https://github.com/righ/d2a/
