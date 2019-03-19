@@ -9,11 +9,13 @@ jobs:
           PGHOST: 127.0.0.1
           PGUSER: root
       - image: postgres:latest
+        name: postgres
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres
           POSTGRES_PORT: 5432
       - image: mysql:latest
+        name: mariadb
         environment:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: circleci
