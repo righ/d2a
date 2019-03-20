@@ -120,7 +120,7 @@ Per models module
 -----------------
 If you want to create a module manually, create a `models_sqla.py` in the apps.
 
-Write like the following to it`:
+Write like the following to it:
 
 .. code-block:: python3
 
