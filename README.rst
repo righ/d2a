@@ -189,46 +189,6 @@ you can register the field as the other field using `alias` or `alias_dict` meth
     ExtendedImageField: ImageField,
   })
 
-Demo
-============
-
-start up environment
---------------------
-
-.. code-block:: shell
-
-  $ git clone git@github.com:righ/d2a.git
-  $ cd d2a
-  $ docker-compose up
-
-preparation
---------------------
-
-.. code-block:: shell 
-
-  $ docker exec -it d2a_app_1 /bin/bash
-  # python -m venv venv # only first time
-  # source venv/bin/activate
-  (venv) # cd project_postgresql/ # (or mysql)
-  (venv) project_postgresql # ./manage.py migrate
-
-execute
-------------
-
-.. code-block:: shell
-
-  (venv) project_postgresql # ./manage.py shell
-
-.. code-block:: python
-
-  >>> from books import models_sqla
-  >>> book = models_sqla.Book()
-  >>> author = models_sqla.Author()
-  >>> book.author = author
-  >>> author.books
-  [<d2a.book object at 0x7f3cec539358>]
-  # And do something you want do ;)
-
 Querying shortcut
 ------------------
 ORM
@@ -323,6 +283,47 @@ There are two functions.
   - PostgreSQL
   - MySQL
   - Oracle
+
+Demo
+============
+
+start up environment
+--------------------
+
+.. code-block:: shell
+
+  $ git clone git@github.com:righ/d2a.git
+  $ cd d2a
+  $ docker-compose up
+
+preparation
+--------------------
+
+.. code-block:: shell 
+
+  $ docker exec -it d2a_app_1 /bin/bash
+  # python -m venv venv # only first time
+  # source venv/bin/activate
+  (venv) # cd project_postgresql/ # (or mysql)
+  (venv) project_postgresql # ./manage.py migrate
+
+execute
+------------
+
+.. code-block:: shell
+
+  (venv) project_postgresql # ./manage.py shell
+
+.. code-block:: python
+
+  >>> from books import models_sqla
+  >>> book = models_sqla.Book()
+  >>> author = models_sqla.Author()
+  >>> book.author = author
+  >>> author.books
+  [<d2a.book object at 0x7f3cec539358>]
+  # And do something you want do ;)
+
 
 Links
 =====
