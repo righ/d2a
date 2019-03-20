@@ -122,11 +122,11 @@ If you want to create a module manually, create a `models_sqla.py` in the apps.
 
 Write like the following to it`:
 
-.. code:: python
+.. code-block:: python3
 
-   from d2a import transfer
-   from . import models
-   transfer(models, globals())
+  from d2a import transfer
+  from . import models
+  transfer(models, globals())
 
 `models_sqla.py` exists, auto module creation will be omitted.
 
@@ -171,7 +171,7 @@ If you just want to convert one model, you should use `declare` function.
 
 Custom fields
 -------------
-If you are using customized field not built-in,
+If you are using customized field (not built-in),
 you can register the field as the other field using `alias` or `alias_dict` method.
 
 .. code:: python
@@ -239,7 +239,7 @@ There is a function named `make_session` for ORM mode.
 
   >>> from d2a import make_session
   >>> from books.models_sqla import Author
-  >>>
+  
   >>> with make_session() as session:
   ...     # it commits and flushes automatically when the scope exits.
   ...     a = Author()
@@ -248,21 +248,8 @@ There is a function named `make_session` for ORM mode.
   ...     session.add(a)
   ...
   >>> with make_session() as session:
-  ...     # it won't register records when some exception raised.
-  ...     a = Author()
-  ...     a.name = 'unknown'
-  ...     a.age = 5
-  ...     session.add(a)
-  ...     raise IndexError()
-  ...
-  An error occured during executing queries.
-  Traceback (most recent call last):
-    File "/root/d2a/db.py", line 140, in make_session
-      yield session
-    File "<console>", line 7, in <module>
-  IndexError
-  >>> with make_session() as session:
-  ...     # it won't register records when the session was rolled back.
+  ...     # when the session was rolled back or causes some exception in the context,
+  ...     # it won't register records in the session.
   ...     a = Author()
   ...     a.name = 'teruhiko'
   ...     a.age = 85
@@ -276,7 +263,7 @@ There is a function named `make_session` for ORM mode.
 
 It receives the following arguments, all arguments can be omitted.
 
-:engine: engine object or database string (default: None). When it is omitted, it guesses database type and get an engine automatically.
+:engine: engine object or database-type (**string**) (default: None). When it is omitted, it guesses database type and gets an engine automatically.
 :autoflush: It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: True)
 :autocommit:  It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: False)
 :expire_on_commit: It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: True)
@@ -286,9 +273,56 @@ Expression
 ~~~~~~~~~~~~~~~~~~
 There are two functions.
 
-:query_expression: It is for getting `SELECT` results, it returns list containing record.
-:execute_expression: It is for executing `INSERT`, `DELETE`, `UPDATE` statement, it returns num of records having been affected.
+:query_expression: It is for getting `SELECT` results, and returns a list containing record.
+:execute_expression: It is for executing `INSERT`, `DELETE`, `UPDATE` statements, and returns num of records having been affected.
 
+.. code-block:: python3
+
+  >>> from sqlalchemy import (
+  ...     select,
+  ...     insert,
+  ... )
+  
+  >>> from d2a import query_expression, execute_expression
+  >>> from books.models_sqla import Author
+  >>>
+  >>> AuthorTable = Author.__table__
+  
+  >>> records = [
+  ...     {'name': 'a', 'age': 10},
+  ...     {'name': 'b', 'age': 30},
+  ...     {'name': 'c', 'age': 20},
+  ... ]
+  
+  >>> # insert
+  >>> stmt = insert(AuthorTable).values(records)
+  >>> execute_expression(stmt)
+  3
+  
+  >>> # select
+  >>> stmt = select([
+  ...     AuthorTable.c.id,
+  ...     AuthorTable.c.name,
+  ...     AuthorTable.c.age,
+  ... ]).select_from(AuthorTable).order_by(AuthorTable.c.age)
+  >>> query_expression(stmt)
+  [
+    OrderedDict([('id', 12), ('name', 'a'), ('age', 10)]),
+    OrderedDict([('id', 14), ('name', 'c'), ('age', 20)]),
+    OrderedDict([('id', 13), ('name', 'b'), ('age', 30)])
+  ]
+
+  >>> # record as tuple
+  >>> query_expression(stmt, as_dict=False)
+  [(12, 'a', 10), (14, 'c', 20), (13, 'b', 30)]
+
+.. warning::
+
+  Supported auto-detecting db types are the following::
+  
+  - PostgreSQL
+  - MySQL
+  - Oracle
 
 Links
 =====
@@ -297,6 +331,11 @@ Links
 
 History
 =======
+:2.0.0:
+
+  - Added a shortcut function for executing in ORM mode.
+  - Added two shortcut functions for executing in EXPRESSION mode.
+
 :1.1.x:
 
   - (2019-02-17)

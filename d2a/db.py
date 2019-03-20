@@ -143,7 +143,7 @@ def make_session(engine=None,
         yield session
     except Exception:
         session.rollback()
-        logger.exception('An error occured during executing queries.')
+        logger.exception('An error occured during executing the statements.')
     else:
         if not autoflush:
             session.flush()
