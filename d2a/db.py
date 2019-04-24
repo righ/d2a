@@ -68,7 +68,7 @@ def _detect_db_type(database='default'):
         'django.db.backends.postgresql_psycopg2': 'postgresql',
         'django.db.backends.mysql': 'mysql',
         'django.db.backends.oracle': 'oracle',
-        # 'django.db.backends.sqlite3': 'sqlite3',
+        'django.db.backends.sqlite3': 'sqlite3',
     }.get(settings.DATABASES[database]['ENGINE'])
 
 
@@ -152,7 +152,7 @@ def show_sql(cursor, printer, delimiter, database, format, reindent, keyword_cas
         'postgresql': lambda: cursor.db.queries_log[-1]['sql'],
         'mysql': lambda: cursor.db.queries_log[-1]['sql'],
         'oracle': lambda: cursor.db.queries_log[-1]['sql'],
-        'sqlite': lambda: cursor.db.queries_log[-1]['sql'],
+        'sqlite3': lambda: cursor.db.queries_log[-1]['sql'],
     }[database]()
     if format:
         try:
@@ -170,7 +170,7 @@ def show_explain(cursor, printer, delimiter, database, sql, params, explain_pref
         'postgresql': lambda: '\n'.join(row[0] for row in cursor),
         'mysql': lambda: '\n'.join(' | '.join(map(str, row)) for row in cursor),
         'oracle': lambda: '\n'.join(' | '.join(map(str, row)) for row in cursor),
-        'sqlite': lambda: '\n'.join(' | '.join(map(str, row)) for row in cursor),
+        'sqlite3': lambda: '\n'.join(' | '.join(map(str, row)) for row in cursor),
     }[database]()
     printer(delimiter + sql)
 
