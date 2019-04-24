@@ -103,15 +103,15 @@ def query_expression(stmt, conn=None, dialect=None, database='default',
         'show_sql': True, # if showing the sql query or not.
         'show_explain': False, # if showing explain for the sql query or not.
         'sql_format': False, # if formatting the sql query or not.
-        'sql_reindex': True, # 
-        'sql_keyword_case': 'upper', # 
+        'sql_reindent': True, # if setting indent the sql query or not.
+        'sql_keyword_case': 'upper', # A rule converting reserved words.
         'explain_prefix': depends on the database type. unless you specify it, it is automatically used the following:
-          {prefixes}
+          %(prefix)s
         'printer': logger.debug, # printing method, if you use python3, then try to use `print` function.
-        'delimiter': '=' * 100, # 
+        'delimiter': '=' * 100, # characters dividing debug informations.
         'database': 'default' # django database
       }
-    """.format(prefixes=EXPLAIN_PREFIXES)
+    """ % {'prefix': EXPLAIN_PREFIXES}
     conn, dialect = _complement(conn, dialect, database)
     binded = stmt.compile(dialect=dialect())
     with conn.cursor() as cursor:
@@ -134,23 +134,45 @@ def query_expression(stmt, conn=None, dialect=None, database='default',
 def show_debug_info(cursor, sql, params, options={}):
     printer = options.get('printer', logger.debug)
     delimiter = options.get('delimiter', '=' * 100 + '\n')
+    database = _detect_db_type(options.get('database', 'default'))
     if options.get('show_sql', True):
-        query = cursor.cursor.query.decode(options.get('sql_encoding', 'utf8'))
-        if options.get('sql_format', False):
-            try:
-                import sqlparse
-                query = sqlparse.format(query, reindent=options.get('sql_reindex', True), keyword_case=options.get('sql_keyword_case', 'upper'))
-            except ImportError:
-                warnings.warn('Formatting sql requires "sqlparse". Do like this: "pip install sqlparse".')
-
-        printer(delimiter + query)
+        show_sql(cursor, printer, delimiter, database,
+                 options.get('sql_format', False),
+                 options.get('sql_reindent', True),
+                 options.get('sql_keyword_case', 'upper'),
+                 )
 
     if options.get('show_explain', False):
-        db = _detect_db_type(options.get('database', 'default'))
-        explain_sql = options.get('explain_prefix', EXPLAIN_PREFIXES[db]) + ' ' + sql
-        _execute_cursor(cursor, explain_sql, params)
-        rows = '\n'.join(row[0] for row in cursor)
-        printer(delimiter + rows)
+        show_explain(cursor, printer, delimiter, database, sql, params,
+                     options.get('explain_prefix', EXPLAIN_PREFIXES[database]))
+
+
+def show_sql(cursor, printer, delimiter, database, format, reindent, keyword_case):
+    sql = {
+        'postgresql': lambda: cursor.db.queries_log[-1]['sql'],
+        'mysql': lambda: cursor.db.queries_log[-1]['sql'],
+        'oracle': lambda: cursor.db.queries_log[-1]['sql'],
+        'sqlite': lambda: cursor.db.queries_log[-1]['sql'],
+    }[database]()
+    if format:
+        try:
+            import sqlparse
+            sql = sqlparse.format(sql, reindent=reindent, keyword_case=keyword_case)
+        except ImportError:
+            warnings.warn('Formatting sql requires "sqlparse". Do like this: "pip install sqlparse".')
+    printer(delimiter + sql)
+
+
+def show_explain(cursor, printer, delimiter, database, sql, params, explain_prefix):
+    explain_sql = explain_prefix + ' ' + sql
+    _execute_cursor(cursor, explain_sql, params)
+    sql = {
+        'postgresql': lambda: '\n'.join(row[0] for row in cursor),
+        'mysql': lambda: '\n'.join(' | '.join(map(str, row)) for row in cursor),
+        'oracle': lambda: '\n'.join(' | '.join(map(str, row)) for row in cursor),
+        'sqlite': lambda: '\n'.join(' | '.join(map(str, row)) for row in cursor),
+    }[database]()
+    printer(delimiter + sql)
 
 
 def execute_expression(stmt, conn=None, dialect=None, database='default'):

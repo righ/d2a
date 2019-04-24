@@ -244,8 +244,10 @@ There are two functions.
   ... )
   
   >>> from d2a import query_expression, execute_expression
-  >>> from books.models_sqla import Author
-  >>>
+
+  # if you try on `project_mysql` demo, you should write ``from books.modelsa import Author``
+  >>> from books.models_sqla import Author  
+  
   >>> AuthorTable = Author.__table__
   
   >>> records = [
@@ -273,8 +275,47 @@ There are two functions.
   ]
 
   >>> # record as tuple
-  >>> query_expression(stmt, as_dict=False)
+  >>> query_expression(stmt, as_col_dict=False)
   [(12, 'a', 10), (14, 'c', 20), (13, 'b', 30)]
+
+  >>> query_expression(stmt, as_col_dict=False, debug={'printer': print, 'show_explain': True, 'sql_format': True})
+  ====================================================================================================
+  SELECT author.id,
+         author.name,
+         author.age
+  FROM author
+  ORDER BY author.age
+  ====================================================================================================
+  Sort  (cost=16.39..16.74 rows=140 width=522) (actual time=0.027..0.028 rows=18 loops=1)
+    Sort Key: age
+    Sort Method: quicksort  Memory: 25kB
+    ->  Seq Scan on author  (cost=0.00..11.40 rows=140 width=522) (actual time=0.007..0.009 rows=18 loops=1)
+  Planning time: 0.072 ms
+  Execution time: 0.047 ms
+  [(12, 'a', 10), (14, 'c', 20), (13, 'b', 30)]
+
+.. note::
+
+  Added an argument for debugging information to ``query_expression()``.
+
+  Specify options as dict type like the following:
+
+  .. code-block:: python3
+
+    query_expression(stmt, debug={  # all options can be skipped.
+        'show_sql': True, # if showing the sql query or not.
+        'show_explain': False, # if showing explain for the sql query or not.
+        'sql_format': False, # if formatting the sql query or not.
+        'sql_reindent': True, # if setting indent the sql query or not.
+        'sql_keyword_case': 'upper', # A rule converting reserved words.
+        'explain_prefix': depends on the database type. unless you specify it, it is automatically used the following:
+          %(prefix)s
+        'printer': logger.debug, # printing method, if you use python3, then try to use `print` function.
+        'delimiter': '=' * 100, # characters dividing debug informations.
+        'database': 'default' # django database
+    })
+
+    Default is ``{}`` (An empty dict means disabling debug.)
 
 .. warning::
 
@@ -332,6 +373,32 @@ Links
 
 History
 =======
+
+:2.1.0:
+
+  - Changed: 
+  
+    - **Warning:** Changed arg name ``as_dict`` to ``as_col_dict``
+  
+  - Added:
+    
+    :as_col_dict: 
+      
+      If result set being list type or not.
+    
+      default is ``True``.
+    
+    :dict_method:
+    
+      A method making row to dict.
+      You got to be able to change the method to ``dict()``.
+
+      default is ``collections.OrderedDict``.
+
+    :debug:
+      
+      If showing debug information or not. specify options dict.
+
 :2.0.0:
 
   - Added a shortcut function for executing in ORM mode.
