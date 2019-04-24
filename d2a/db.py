@@ -17,6 +17,13 @@ DIALECTS = {
     if hasattr(dialects, t)
 }
 
+EXPLAIN_PREFIXES = {
+    'postgresql': 'EXPLAIN ANALYZE',
+    'mysql': 'EXPLAIN',
+    'oracle': 'EXPLAIN PLAN FOR',
+    'sqlite': 'EXPLAIN QUERY PLAN',
+}
+
 DIALECT_MAPPING = {}
 key = 'postgresql'
 if key in DIALECTS:
@@ -84,18 +91,66 @@ def _complement(conn, dialect, database='default'):
 
 
 def query_expression(stmt, conn=None, dialect=None, database='default',
-                     as_dict=True):
+                     as_col_dict=True, as_row_list=True, dict_method=OrderedDict, debug={}):
+    """
+    :stmt: sqlalchemy expression object
+    :as_col_dict: 
+      default: True,
+    :as_row_list:
+      default: True,
+    :debug: 
+      default: {
+        'show_sql': True, # if showing the sql query or not.
+        'show_explain': False, # if showing explain for the sql query or not.
+        'sql_format': False, # if formatting the sql query or not.
+        'sql_reindex': True, # 
+        'sql_keyword_case': 'upper', # 
+        'explain_prefix': depends on the database type. unless you specify it, it is automatically used the following:
+          {prefixes}
+        'printer': logger.debug, # printing method, if you use python3, then try to use `print` function.
+        'delimiter': '=' * 100, # 
+        'database': 'default' # django database
+      }
+    """.format(prefixes=EXPLAIN_PREFIXES)
     conn, dialect = _complement(conn, dialect, database)
     binded = stmt.compile(dialect=dialect())
     with conn.cursor() as cursor:
         sql, params = DIALECT_MAPPING[dialect](str(binded), binded.params)
         _execute_cursor(cursor, sql, params)
-        if not as_dict:
-            return list(cursor)
-        return [
-            OrderedDict(zip([c.name for c in stmt.c], row))
-            for row in cursor
-        ]
+        if not as_col_dict:
+            result = list(cursor) if as_row_list else cursor
+        else:
+            dicts = (
+                dict_method(zip([c.name for c in stmt.c], row))
+                for row in cursor
+            )
+            result = list(dicts) if as_row_list else dicts
+
+        if debug:
+            show_debug_info(cursor, sql, params, debug)
+        return result
+
+
+def show_debug_info(cursor, sql, params, options={}):
+    printer = options.get('printer', logger.debug)
+    delimiter = options.get('delimiter', '=' * 100 + '\n')
+    if options.get('show_sql', True):
+        query = cursor.cursor.query.decode(options.get('sql_encoding', 'utf8'))
+        if options.get('sql_format', False):
+            try:
+                import sqlparse
+                query = sqlparse.format(query, reindent=options.get('sql_reindex', True), keyword_case=options.get('sql_keyword_case', 'upper'))
+            except ImportError:
+                warnings.warn('Formatting sql requires "sqlparse". Do like this: "pip install sqlparse".')
+
+        printer(delimiter + query)
+
+    if options.get('show_explain', False):
+        db = _detect_db_type(options.get('database', 'default'))
+        explain_sql = options.get('explain_prefix', EXPLAIN_PREFIXES[db]) + ' ' + sql
+        _execute_cursor(cursor, explain_sql, params)
+        rows = '\n'.join(row[0] for row in cursor)
+        printer(delimiter + rows)
 
 
 def execute_expression(stmt, conn=None, dialect=None, database='default'):
