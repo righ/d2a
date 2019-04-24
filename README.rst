@@ -315,11 +315,11 @@ There are two functions.
         'database': 'default' # django database
     })
 
-    Default is ``{}`` (An empty dict means disabling debug.)
+  Default is ``{}`` (An empty dict means disabling debug.)
 
 .. warning::
 
-  Supported auto-detecting db types are the following::
+  Supported auto-detecting db types are the following:
   
   - PostgreSQL
   - MySQL
