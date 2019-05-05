@@ -50,9 +50,9 @@ Just add `d2a` to ``settings.INSTALLED_APPS``.
 .. warning::
 
   Put it before apps you made as much as possible.
-  Because it wants to register alchemy model before the other ``apps.py``.
+  Because it expects to register alchemy model before the other ``apps.py``.
 
-Then `models_sqla` (default) in all apps become possible to be imported as a module.
+Then `models_sqla` (default) in all apps will be imported as a module.
 
 .. code:: python
 
@@ -221,7 +221,7 @@ There is a function named `make_session` for ORM mode.
   ...
   [('righ', 30)]
 
-It receives the following arguments, all arguments can be omitted.
+It receives the following arguments:
 
 :engine: engine object or database-type (**string**) (default: None). When it is omitted, it guesses database type and gets an engine automatically.
 :autoflush: It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: True)
@@ -229,12 +229,14 @@ It receives the following arguments, all arguments can be omitted.
 :expire_on_commit: It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: True)
 :info: It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: None)
 
+All arguments can be omitted.
+
 Expression
 ~~~~~~~~~~~~~~~~~~
 There are two functions.
 
-:query_expression: It is for getting `SELECT` results, and returns a list containing record.
-:execute_expression: It is for executing `INSERT`, `DELETE`, `UPDATE` statements, and returns num of records having been affected.
+:query_expression: To retrieve `SELECT` results, and returns a list containing record.
+:execute_expression: To execute `INSERT`, `DELETE`, `UPDATE` statements, and returns num of records having been affected.
 
 .. code-block:: python3
 
@@ -246,7 +248,7 @@ There are two functions.
   >>> from d2a import query_expression, execute_expression
 
   # if you try on `project_mysql` demo, you should write ``from books.modelsa import Author``
-  >>> from books.models_sqla import Author  
+  >>> from books.models_sqla import Author
   
   >>> AuthorTable = Author.__table__
   
@@ -296,7 +298,7 @@ There are two functions.
 
 .. note::
 
-  Added an argument for debugging information to ``query_expression()``.
+  I added argument of ``query_expression()`` to see debugging information.
 
   Specify options as dict type like the following:
 
@@ -308,9 +310,8 @@ There are two functions.
         'sql_format': False, # if formatting the sql query or not.
         'sql_reindent': True, # if setting indent the sql query or not.
         'sql_keyword_case': 'upper', # A rule converting reserved words.
-        'explain_prefix': depends on the database type. unless you specify it, it is automatically used the following:
-          %(prefix)s
-        'printer': logger.debug, # printing method, if you use python3, then try to use `print` function.
+        'explain_prefix': depends on the database type. unless you specify it, an appropriate prefix will be automatically used.
+        'printer': logger.debug, # printing method, if you use python3, then try `print` function.
         'delimiter': '=' * 100, # characters dividing debug informations.
         'database': 'default' # django database
     })
@@ -382,7 +383,7 @@ History
   
   - Added:
     
-    :as_col_dict: 
+    :as_row_list: 
       
       If result set being list type or not.
     
