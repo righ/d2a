@@ -49,7 +49,7 @@ Just add `d2a` to ``settings.INSTALLED_APPS``.
 
 .. warning::
 
-  Put it before apps you made as much as possible.
+  Put it before apps you made as you can.
   Because it expects to register alchemy model before the other ``apps.py``.
 
 Then `models_sqla` (default) in all apps will be imported as a module.
