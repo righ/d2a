@@ -1,5 +1,5 @@
-.. image:: https://circleci.com/gh/righ/d2a.svg?style=svg
-  :target: https://circleci.com/gh/righ/d2a
+.. image:: https://circleci.com/gh/walkframe/d2a.svg?style=svg
+  :target: https://circleci.com/gh/walkframe/d2a
 
 Requirements
 ============
