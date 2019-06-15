@@ -135,7 +135,7 @@ it is unnecessary to set `d2a` to ``settings.INSTALLED_APPS``.
 
 Example:
 
-- `project_postgresql/books/models_sqla.py <https://github.com/righ/d2a/blob/master/project_postgresql/books/models_sqla.py>`_
+- `project_postgresql/books/models_sqla.py <https://github.com/walkframe/d2a/blob/master/project_postgresql/books/models_sqla.py>`_
 - You can omit specifying `db_type`, then it automatically detects a database type from ``settings.DATABASES['default']``.
 
   - Now `postgresql`, `mysql` and `oracle` are allowed,
@@ -334,7 +334,7 @@ start up environment
 
 .. code-block:: shell
 
-  $ git clone git@github.com:righ/d2a.git
+  $ git clone git@github.com:walkframe/d2a.git
   $ cd d2a
   $ docker-compose up
 
@@ -369,7 +369,7 @@ execute
 
 Links
 =====
-- https://github.com/righ/d2a/
+- https://github.com/walkframe/d2a
 - https://pypi.org/project/d2a/
 
 History
