@@ -1,3 +1,6 @@
+.. image:: https://badge.fury.io/py/d2a.svg
+  :target: https://badge.fury.io/py/d2a
+
 .. image:: https://circleci.com/gh/walkframe/d2a.svg?style=svg
   :target: https://circleci.com/gh/walkframe/d2a
 
