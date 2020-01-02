@@ -115,3 +115,4 @@ class Test_make_session:
                 {'name': 'c', 'age': 30},
             ]
             assert actual == expected
+

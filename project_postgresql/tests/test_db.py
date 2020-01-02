@@ -7,6 +7,7 @@ from sqlalchemy import (
     func,
 )
 
+
 @pytest.fixture(scope='function')
 def author_model():
     from books.models_sqla import Author
@@ -115,3 +116,4 @@ class Test_make_session:
                 {'name': 'c', 'age': 30},
             ]
             assert actual == expected
+

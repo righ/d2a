@@ -82,11 +82,11 @@ WSGI_APPLICATION = 'project_postgresql.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'postgres',
-        'PORT': 5432,
+        'NAME': 'd2a',
+        'USER': 'd2a',
+        'PASSWORD': 'd2a',
+        'HOST': os.environ.get('DB_HOST', 'postgres'),
+        'PORT': os.environ.get('POSTGRES_PORT', 5432),
     },
     'replica': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',

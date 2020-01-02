@@ -1,6 +1,7 @@
 # coding: utf-8
 import re
 import logging
+import warnings
 from collections import OrderedDict
 from contextlib import contextmanager
 
@@ -25,39 +26,55 @@ EXPLAIN_PREFIXES = {
 }
 
 DIALECT_MAPPING = {}
+
 key = 'postgresql'
 if key in DIALECTS:
     # https://github.com/sqlalchemy/sqlalchemy/blob/f572cdf7850b7a2ee6b7535b8129a76fa73496e6/test/sql/test_compiler.py#L2562
-    DIALECT_MAPPING[DIALECTS[key]] = lambda sql, params: (
+    DIALECT_MAPPING[DIALECTS[key]] = lambda sql, binded: (
         sql,
-        params,
+        binded.params,
     )
 
 key = 'mysql'
 if key in DIALECTS:
     # https://github.com/sqlalchemy/sqlalchemy/blob/f572cdf7850b7a2ee6b7535b8129a76fa73496e6/test/sql/test_compiler.py#L2583
-    DIALECT_MAPPING[DIALECTS[key]] = lambda sql, params: (
+    DIALECT_MAPPING[DIALECTS[key]] = lambda sql, binded: (
         sql,
-        tuple(params.values()),
+        tuple(binded.params[k] for k in binded.positiontup),
     )
 
 key = 'oracle'
 if key in DIALECTS:
     # https://github.com/sqlalchemy/sqlalchemy/blob/f572cdf7850b7a2ee6b7535b8129a76fa73496e6/test/sql/test_compiler.py#L2569
-    DIALECT_MAPPING[DIALECTS[key]] = lambda sql, params: (
+    DIALECT_MAPPING[DIALECTS[key]] = lambda sql, binded: (
         re.sub(r"(?<!:):([A-Za-z][0-9A-Za-z_]+)", r"%(\1)s", sql),
-        params,
+        binded.params,
     )
 
 key = 'sqlite'
 if key in DIALECTS:
     # https://github.com/sqlalchemy/sqlalchemy/blob/f572cdf7850b7a2ee6b7535b8129a76fa73496e6/test/sql/test_compiler.py#L2599
-    DIALECT_MAPPING[DIALECTS[key]] = lambda sql, params: (
+    DIALECT_MAPPING[DIALECTS[key]] = lambda sql, binded: (
         sql.replace('?', '%s'),
-        tuple(params.values()),
+        tuple(binded.params.values()),
     )
 
 MS_DSN = 'DRIVER={{SQL Server}}; SERVER={HOST}; DATABASE={NAME}; UID={USER}; PWD={PASSWORD};'
+URI = {
+    'postgresql': 'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}',
+    'postgresql+psycopg2': 'postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}', 
+    'mysql': 'mysql://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}',
+    'mysql+mysqldb': 'mysql+mysqldb://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}',
+    'oracle': 'oracle://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}',
+    'oracle+cx_oracle': 'oracle+cx_oracle://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}',
+    'mssql': 'mssql://{USER}:{PASSWORD}@' + MS_DSN,
+    'mssql+pyodbc': 'mssql+pyodbc://{USER}:{PASSWORD}@' + MS_DSN,
+    'mssql+adodbapi': 'mssql+adodbapi://{USER}:{PASSWORD}@' + MS_DSN,
+    'mssql+pymssql': 'mssql+pymssql://{USER}:{PASSWORD}@' + MS_DSN,
+    'sqlite': 'sqlite:///{NAME}',
+    'sqlite3': 'sqlite:///{NAME}',
+    'sqlite+memory': 'sqlite://',
+}
 
 logger = logging.getLogger(__name__)
 
@@ -94,11 +111,11 @@ def query_expression(stmt, conn=None, dialect=None, database='default',
                      as_col_dict=True, as_row_list=True, dict_method=OrderedDict, debug={}):
     """
     :stmt: sqlalchemy expression object
-    :as_col_dict: 
+    :as_col_dict:
       default: True,
     :as_row_list:
       default: True,
-    :debug: 
+    :debug:
       default: {
         'show_sql': True, # if showing the sql query or not.
         'show_explain': False, # if showing explain for the sql query or not.
@@ -111,27 +128,36 @@ def query_expression(stmt, conn=None, dialect=None, database='default',
         'delimiter': '=' * 100, # characters dividing debug informations.
         'database': 'default' # django database
       }
-    """ % {'prefix': EXPLAIN_PREFIXES}
+    """
     conn, dialect = _complement(conn, dialect, database)
     binded = stmt.compile(dialect=dialect())
+    sql, params = DIALECT_MAPPING[dialect](str(binded), binded)
     with conn.cursor() as cursor:
-        sql, params = DIALECT_MAPPING[dialect](str(binded), binded.params)
         _execute_cursor(cursor, sql, params)
         if not as_col_dict:
             result = list(cursor) if as_row_list else cursor
         else:
-            dicts = (
-                dict_method(zip([c.name for c in stmt.c], row))
-                for row in cursor
-            )
+            dicts = (dict_method(zip([c.name for c in stmt.c], row))
+                     for row in cursor)
             result = list(dicts) if as_row_list else dicts
 
         if debug:
-            show_debug_info(cursor, sql, params, debug)
+            show_debug(cursor, sql, params, debug)
         return result
 
 
-def show_debug_info(cursor, sql, params, options={}):
+def execute_expression(stmt, conn=None, dialect=None, database='default', debug={}):
+    conn, dialect = _complement(conn, dialect, database)
+    binded = stmt.compile(dialect=dialect())
+    sql, params = DIALECT_MAPPING[dialect](str(binded), binded)
+    with conn.cursor() as cursor:
+        _execute_cursor(cursor, sql, params)
+        if debug:
+            show_debug(cursor, sql, params, debug)
+        return cursor.rowcount
+
+
+def show_debug(cursor, sql, params, options={}):
     printer = options.get('printer', logger.debug)
     delimiter = options.get('delimiter', '=' * 100 + '\n')
     database = _detect_db_type(options.get('database', 'default'))
@@ -159,7 +185,7 @@ def show_sql(cursor, printer, delimiter, database, format, reindent, keyword_cas
             import sqlparse
             sql = sqlparse.format(sql, reindent=reindent, keyword_case=keyword_case)
         except ImportError:
-            warnings.warn('Formatting sql requires "sqlparse". Do like this: "pip install sqlparse".')
+            warnings.warn('Formatting sql requires "sqlparse". Do as follows: "pip install sqlparse".')
     printer(delimiter + sql)
 
 
@@ -175,43 +201,16 @@ def show_explain(cursor, printer, delimiter, database, sql, params, explain_pref
     printer(delimiter + sql)
 
 
-def execute_expression(stmt, conn=None, dialect=None, database='default'):
-    conn, dialect = _complement(conn, dialect, database)
-    binded = stmt.compile(dialect=dialect())
-    with conn.cursor() as cursor:
-        sql, params = DIALECT_MAPPING[dialect](str(binded), binded.params)
-        _execute_cursor(cursor, sql, params)
-        return cursor.rowcount
-
-
-def make_engine(db_type=None, database='default', encoding='utf8', echo=False):
-    uri = {
-        'postgresql': 'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}',
-        'postgresql+psycopg2': 'postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}', 
-        'mysql': 'mysql://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}',
-        'mysql+mysqldb': 'mysql+mysqldb://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}',
-        'oracle': 'oracle://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}',
-        'oracle+cx_oracle': 'oracle+cx_oracle://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}',
-        'mssql': 'mssql://{USER}:{PASSWORD}@' + MS_DSN,
-        'mssql+pyodbc': 'mssql+pyodbc://{USER}:{PASSWORD}@' + MS_DSN,
-        'mssql+adodbapi': 'mssql+adodbapi://{USER}:{PASSWORD}@' + MS_DSN,
-        'mssql+pymssql': 'mssql+pymssql://{USER}:{PASSWORD}@' + MS_DSN,
-        'sqlite': 'sqlite:///{NAME}',
-        'sqlite3': 'sqlite:///{NAME}',
-        'sqlite+memory': 'sqlite://',
-    }[db_type or _detect_db_type(database)]
-    return create_engine(
-        uri.format(**settings.DATABASES[database]),
-        encoding=encoding, echo=echo)
+def make_engine(db_type=None, database='default', **options):
+    uri = URI[db_type or _detect_db_type(database)]
+    return create_engine(uri.format(**settings.DATABASES[database]), **options)
 
 
 @contextmanager
 def make_session(engine=None,
                  autoflush=True, autocommit=False,
-                 expire_on_commit=True, info=None
-):
-    if not engine:
-        engine = make_engine()
+                 expire_on_commit=True, info=None):
+    engine = engine or make_engine()
     Session = sessionmaker(engine,
                            autoflush=autoflush, autocommit=autocommit,
                            expire_on_commit=expire_on_commit, info=info)
@@ -231,3 +230,4 @@ def make_session(engine=None,
 
 
 AUTO_DETECTED_DB_TYPE = _detect_db_type()
+
