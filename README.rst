@@ -198,7 +198,7 @@ you can register the field as the other field using `alias` or `alias_dict` meth
 
 .. note::
 
-  Before 2.1.x d2a maps ``django.contrib.postgres.fields.JSONField`` to ``JSON`` uncorrectly. It should have mapped it to ``JSONB``.
+  Before 2.1.x d2a maps ``django.contrib.postgres.fields.JSONField`` to ``JSON`` by mistake. It should have mapped it to ``JSONB``.
 
   Since 2.2.0 the mapping is fixed.
 
