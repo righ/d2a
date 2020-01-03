@@ -2,7 +2,7 @@
   :target: https://badge.fury.io/py/d2a
 
 .. image:: https://github.com/walkframe/d2a/workflows/ci/badge.svg
-  :targe: https://github.com/walkframe/d2a/actions
+  :target: https://github.com/walkframe/d2a/actions
 
 
 
