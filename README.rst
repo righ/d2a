@@ -1,7 +1,7 @@
 .. image:: https://badge.fury.io/py/d2a.svg
   :target: https://badge.fury.io/py/d2a
 
-.. image:: https://github.com/walkframe/d2a/workflows/ci/badge.svg
+.. image:: https://github.com/walkframe/d2a/workflows/master/badge.svg
   :target: https://github.com/walkframe/d2a/actions
 
 
@@ -10,11 +10,11 @@ Requirements
 ============
 - Python: 3.5 or later.
 
-  - Tested with 3.5.7, 3.8.0
+  - Tested with 3.5, 3.8
 
 - Django: 1.11, 2.x, 3.x
   
-  - Tested with 1.11.27, 2.2.9, 3.0.1
+  - Tested with 1.11.27, 2.2.9, 3.0.1, 3.0.3
 
 - SQLAlchemy: 1.1 or later.
 
@@ -87,7 +87,7 @@ Then `models_sqla` (default) in all apps will be imported as a module.
     schema=None
   )
 
-Also, it can extract model declared implicitly depending on m2m field.
+Also it can extract model declared implicitly depending on m2m field.
 (in this case, `BookCategory`)
 
 .. note::
@@ -216,46 +216,6 @@ you can register the field as the other field using `alias` or `alias_dict` meth
 
 Querying shortcut
 ------------------
-ORM
-~~~~~~~~~~~~~~~~~~
-There is a function named `make_session` for ORM mode.
-
-.. code-block:: python3
-
-  >>> from d2a import make_session
-  >>> from books.models_sqla import Author
-  
-  >>> with make_session() as session:
-  ...     # it commits and flushes automatically when the scope exits.
-  ...     a = Author()
-  ...     a.name = 'righ'
-  ...     a.age = 30
-  ...     session.add(a)
-  ...
-  >>> with make_session() as session:
-  ...     # when the session was rolled back or causes some exception in the context,
-  ...     # it won't register records in the session.
-  ...     a = Author()
-  ...     a.name = 'teruhiko'
-  ...     a.age = 85
-  ...     session.add(a)
-  ...     session.rollback()
-  ...
-  >>> with make_session() as session:
-  ...     session.query(Author.name, Author.age).all()
-  ...
-  [('righ', 30)]
-
-It receives the following arguments:
-
-:engine: engine object or database-type (**string**) (default: None). When it is omitted, it guesses database type and gets an engine automatically.
-:autoflush: It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: True)
-:autocommit:  It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: False)
-:expire_on_commit: It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: True)
-:info: It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: None)
-
-All arguments can be omitted.
-
 Expression
 ~~~~~~~~~~~~~~~~~~
 There are two functions.
@@ -344,6 +304,46 @@ There are two functions.
 
   Default is ``{}`` (An empty dict means disabling debug.)
 
+ORM
+~~~~~~~~~~~~~~~~~~
+There is a function named `make_session` for ORM mode.
+
+.. code-block:: python3
+
+  >>> from d2a import make_session
+  >>> from books.models_sqla import Author
+  
+  >>> with make_session() as session:
+  ...     # it commits and flushes automatically when the scope exits.
+  ...     a = Author()
+  ...     a.name = 'righ'
+  ...     a.age = 30
+  ...     session.add(a)
+  ...
+  >>> with make_session() as session:
+  ...     # when the session was rolled back or causes some exception in the context,
+  ...     # it won't register records in the session.
+  ...     a = Author()
+  ...     a.name = 'teruhiko'
+  ...     a.age = 85
+  ...     session.add(a)
+  ...     session.rollback()
+  ...
+  >>> with make_session() as session:
+  ...     session.query(Author.name, Author.age).all()
+  ...
+  [('righ', 30)]
+
+It receives the following arguments:
+
+:engine: engine object or database-type (**string**) (default: None). When it is omitted, it guesses database type and gets an engine automatically.
+:autoflush: It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: True)
+:autocommit:  It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: False)
+:expire_on_commit: It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: True)
+:info: It is the same as `sessionmaker <https://docs.sqlalchemy.org/en/latest/orm/session_api.html#session-and-sessionmaker>`__ (default: None)
+
+All arguments can be omitted.
+
 .. warning::
 
   Supported auto-detecting db types are the following:
@@ -402,7 +402,9 @@ History
 =======
 :2.2.x:
 
-  - (2020-01-03)
+  - :2020-01-03: Release
+    :2020-02-13: dealt with failing CI
+ 
   - Supported the following fields:
 
     - `PositiveBigIntegerField`
