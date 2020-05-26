@@ -12,9 +12,9 @@ Requirements
 
   - Tested with 3.5, 3.8
 
-- Django: 1.11, 2.x, 3.x
+- Django: 2.x, 3.x
   
-  - Tested with 1.11.27, 2.2.9, 3.0.1, 3.0.3
+  - Tested with 2.2.9, 3.0.1, 3.0.3
 
 - SQLAlchemy: 1.1 or later.
 
@@ -118,6 +118,7 @@ Also it can extract model declared implicitly depending on m2m field.
             # Evaluates ExtendedImageField as ImageField
             ExtendedImageField: models.ImageField,
         },
+        'USE_GEOALCHEMY2': True,  # default: False
     }
 
 
@@ -392,7 +393,10 @@ execute
   [<d2a.book object at 0x7f3cec539358>]
   # And do something you want to do ;)
 
-`GeoDjango-GeoAlchemy2 translation demo <https://github.com/walkframe/d2a/blob/master/demo_geoalchemy2.rst>`__
+GeoDjango
+--------------
+
+- `GeoDjango-GeoAlchemy2 translation demo <https://github.com/walkframe/d2a/blob/master/demo_geoalchemy2.rst>`__
 
 Links
 =====
@@ -401,9 +405,16 @@ Links
 
 History
 =======
+:2.5.x:
+
+  - 2020-05-26
+  - Dropped support for `django1.11`
+  - Changed key format. (`prefix:_` to `around:__`)
+  - Set up continuous deployment to PyPI.
+
 :2.4.x:
 
-  - 2020-05-XX
+  - 2020-05-26
   - Add postgres fields
 
     - `CIText fields <https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#citext-fields>`__
@@ -425,14 +436,13 @@ History
 
 :2.3.x:
   
-  :2020-05-25:
+  - 2020-05-25
+  - GeoAlchemy2 support.
 
-    - GeoAlchemy2 support.
-
-      - It translates 
-        `GeoDjango fields <https://docs.djangoproject.com/en/3.0/ref/contrib/gis/model-api/>`__
-        into 
-        `GeoAlchemy2 fields <https://geoalchemy-2.readthedocs.io/en/0.2.6/types.html>`__.
+    - It translates 
+      `GeoDjango fields <https://docs.djangoproject.com/en/3.0/ref/contrib/gis/model-api/>`__
+      into 
+      `GeoAlchemy2 fields <https://geoalchemy-2.readthedocs.io/en/0.2.6/types.html>`__.
 
 :2.2.x:
 
