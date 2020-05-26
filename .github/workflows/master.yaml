@@ -70,7 +70,8 @@ jobs:
           MYSQL_USER: root
           MYSQL_PASSWORD: root
 
-  deploy:
+  release:
+    needs: test
     runs-on: ubuntu-latest
     name: pypi upload
     steps:
@@ -81,7 +82,7 @@ jobs:
           python-version: 3.8
 
       - name: Install requirements for upload.
-        run: pip install -u setuptools wheel twine
+        run: pip install -U setuptools wheel twine
 
       - name: Build dists.
         run: ./setup.py sdist bdist_wheel
