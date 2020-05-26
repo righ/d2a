@@ -88,7 +88,7 @@ jobs:
         run: ./setup.py sdist bdist_wheel
       
       - name: Upload dists.
-        run: twine upload dist/* --non-interactive
+        run: twine upload dist/* --non-interactive --skip-existing 
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
