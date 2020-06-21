@@ -4,7 +4,11 @@
 .. image:: https://github.com/walkframe/d2a/workflows/master/badge.svg
   :target: https://github.com/walkframe/d2a/actions
 
+.. image:: https://img.shields.io/pypi/dm/d2a.svg
+  :target: https://pypi.org/project/d2a/
 
+.. image:: https://img.shields.io/badge/License-MIT-blue.svg
+  :target: https://opensource.org/licenses/MIT
 
 Requirements
 ============
