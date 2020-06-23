@@ -115,16 +115,18 @@ def autoload(config=D2A_CONFIG.get('AUTOLOAD', {})):
     module = config.get('module', 'models_sqla')
     option = config.get('option', {})
     for app in settings.INSTALLED_APPS:
-        app = app if app[:7] == 'django.' else app.split('.')[0]
-        d = '{app}.models'.format(app=app)
-        a = '{app}.{module}'.format(app=app, module=module)
-        if importlib.util.find_spec(d) is None:
-            continue
-        try:
-            importlib.import_module(a)
-        except ImportError:
-            sys.modules[a] = types.ModuleType(a)
-            transfer(importlib.import_module(d), sys.modules[a].__dict__, **option)
+        mods = app.split('.')
+        for i in range(1, len(mods) + 1):
+            mod = '.'.join(mods[:i])
+            d = '{mod}.models'.format(mod=mod)
+            a = '{mod}.{module}'.format(mod=mod, module=module)
+            if importlib.util.find_spec(d) is None:
+                continue
+            try:
+                importlib.import_module(a)
+            except ImportError:
+                sys.modules[a] = types.ModuleType(a)
+                transfer(importlib.import_module(d), sys.modules[a].__dict__, **option)
 
 
 default_app_config = "d2a.apps.D2aConfig"
