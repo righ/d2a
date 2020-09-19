@@ -9,7 +9,6 @@ services:
       - LANG='en_US.UTF-8'
       - PYTHONDONTWRITEBYTECODE=1
     tty: true
-    command: /bin/bash
     working_dir: /root/
     volumes:
       - ./:/root/
@@ -18,7 +17,7 @@ services:
         python -m venv venv/ || true &&
         venv/bin/pip install pip setuptools -U &&
         venv/bin/pip install wheel &&
-        venv/bin/pip install -r demo_requirements.txt &&
+        venv/bin/pip install -r requirements/demo_requirements.txt &&
         bash
       "
     privileged: true

@@ -1,7 +1,7 @@
 .. image:: https://badge.fury.io/py/d2a.svg
   :target: https://badge.fury.io/py/d2a
 
-.. image:: https://github.com/walkframe/d2a/workflows/master/badge.svg
+.. image:: https://github.com/walkframe/d2a/workflows/build/badge.svg?branch=master
   :target: https://github.com/walkframe/d2a/actions
 
 .. image:: https://img.shields.io/pypi/dm/d2a.svg
@@ -18,11 +18,11 @@ Requirements
 
 - Django: 2.x, 3.x
   
-  - Tested with 2.2.9, 3.0.1, 3.0.3
+  - Tested with 2.2.9, 3.0.1, 3.1.1
 
 - SQLAlchemy: 1.1 or later.
 
-  - Tested with 1.1.0, 1.3.12
+  - Tested with 1.1.0, 1.3.19
 
 Installation
 ============
@@ -107,8 +107,6 @@ Also it can extract model declared implicitly depending on m2m field.
         'AUTOLOAD': { # optional
             # module name: It can be used different module name from `models_sqla`.
             'module': 'modelsa',  # optional, default: 'models_sqla'
-            # waiting seconds during autoloading
-            'seconds': 5,  # default: 1
             # transfer function's args after 'exports' arg.
             'option': {  # optional
                 'db_type': 'postgresql',  # default: 'default'
